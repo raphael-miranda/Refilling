@@ -15,36 +15,94 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:layout_marginTop="10dp">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:padding="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center">
+                android:layout_marginStart="12dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:text="User: "
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/txtUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:fontFamily="sans-serif"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnUpload"
+                android:layout_width="120dp"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="10dp"
+                android:text="@string/upload"
+                android:textSize="18sp"
+                android:textAllCaps="false"
+                android:enabled="false"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_centerInParent="true">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif"
-                    android:text="@string/scanned"
+                    android:text="@string/scan"
                     android:textColor="#000000"
-                    android:textSize="18sp"
-                    android:textStyle="normal" />
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/txtScannedNumber"
-                    android:layout_width="80dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="30dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
                     android:background="@drawable/text_bg"
                     android:gravity="center"
                     android:nextFocusForward="@+id/tvPNr"
                     android:text="0"
                     android:textColor="#ffffff"
-                    android:textSize="18sp"/>
+                    android:textSize="20sp"/>
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="10dp">
+                <TextView
+                    android:id="@+id/txtCurrentDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:text="02.04.2025"
+                    android:textSize="15sp" />
+                <TextView
+                    android:id="@+id/txtCurrentTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:text="07:50"
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <ImageView
@@ -52,7 +110,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
+                android:layout_alignParentBottom="true"
                 android:contentDescription="@string/settings"
                 android:src="@drawable/settings"
                 android:layout_marginEnd="10dp"/>
@@ -79,41 +137,64 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif"
-                    android:text="@string/small_label"
+                    android:text="@string/carton"
                     android:textColor="#000000"
                     android:textSize="18sp"
                     android:textStyle="bold"/>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="4dp"
+                        android:background="@color/grey"
+                        android:text="0"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textAlignment="center"
+                        android:gravity="center"
+                        android:layout_marginEnd="8dp"/>
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/packages"/>
+                </LinearLayout>
+
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtCtNrField"
+                    android:id="@+id/txtCtNrField1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                     android:hint="@string/ct_nr"
-                    android:layout_marginHorizontal="6dp"
+                    android:layout_marginHorizontal="2dp"
                     android:layout_marginVertical="4dp">
 
                     <!--this is the actual edit text which takes the input-->
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/txtCtNr"
+                        android:id="@+id/txtCtNr1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:textAlignment="center"
-                        android:textSize="18sp"
+                        android:textSize="16sp"
                         android:focusable="true"
                         android:focusableInTouchMode="true" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtPartNr1Field"
+                    android:id="@+id/txtPartNrField1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                     android:hint="@string/part_nr"
-                    android:layout_marginHorizontal="6dp"
+                    android:layout_marginHorizontal="2dp"
                     android:layout_marginVertical="4dp">
 
                     <!--this is the actual edit text which takes the input-->
@@ -124,50 +205,50 @@
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:textAlignment="center"
-                        android:textSize="18sp"/>
+                        android:textSize="16sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtDNrField"
+                    android:id="@+id/txtDNrField1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                     android:hint="@string/d_nr"
-                    android:layout_marginHorizontal="6dp"
+                    android:layout_marginHorizontal="2dp"
                     android:layout_marginVertical="4dp">
 
                     <!--this is the actual edit text which takes the input-->
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/txtDNr"
+                        android:id="@+id/txtDNr1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:textAlignment="center"
-                        android:textSize="18sp"/>
+                        android:textSize="16sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtQtty1Field"
+                    android:id="@+id/txtQuantityField1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                     android:hint="@string/qtty"
-                    android:layout_marginHorizontal="6dp"
+                    android:layout_marginHorizontal="2dp"
                     android:layout_marginVertical="4dp"
                     app:helperTextEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/txtQtty1"
+                        android:id="@+id/txtQuantity1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
                         android:imeOptions="actionNext"
                         android:nextFocusForward="@+id/txtCName"
                         android:textAlignment="center"
-                        android:textSize="18sp" />
+                        android:textSize="16sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -184,42 +265,67 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif"
-                    android:text="@string/big_label"
+                    android:text="@string/minus"
                     android:textColor="#000000"
                     android:textSize="18sp"
                     android:textStyle="bold"/>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="4dp"
+                        android:background="@color/grey"
+                        android:text="0"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textAlignment="center"
+                        android:gravity="center"
+                        android:layout_marginEnd="8dp"/>
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/barcode"/>
+                </LinearLayout>
+
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtCNameField"
+                    android:id="@+id/txtCtNrField2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-                    android:hint="@string/c_name"
-                    android:layout_marginHorizontal="6dp"
+                    android:hint="@string/ct_nr"
+                    android:layout_marginHorizontal="2dp"
                     android:layout_marginVertical="4dp">
 
+                    <!--this is the actual edit text which takes the input-->
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/txtCName"
+                        android:id="@+id/txtCtNr2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:textAlignment="center"
-                        android:textSize="18sp"
+                        android:textSize="16sp"
                         android:focusable="true"
-                        android:focusableInTouchMode="true"/>
+                        android:focusableInTouchMode="true" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtPartNr2Field"
+                    android:id="@+id/txtPartNrField2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                     android:hint="@string/part_nr"
-                    android:layout_marginHorizontal="6dp"
+                    android:layout_marginHorizontal="2dp"
                     android:layout_marginVertical="4dp">
 
+                    <!--this is the actual edit text which takes the input-->
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtPartNr2"
                         android:layout_width="match_parent"
@@ -227,68 +333,174 @@
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:textAlignment="center"
-                        android:textSize="18sp"/>
+                        android:textSize="16sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtCustNField"
+                    android:id="@+id/txtDNrField2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-                    android:hint="@string/cust_n"
-                    android:layout_marginHorizontal="6dp"
+                    android:hint="@string/d_nr"
+                    android:layout_marginHorizontal="2dp"
                     android:layout_marginVertical="4dp">
 
+                    <!--this is the actual edit text which takes the input-->
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/txtCustN"
+                        android:id="@+id/txtDNr2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:textAlignment="center"
-                        android:textSize="18sp"/>
+                        android:textSize="16sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtQtty2Field"
+                    android:id="@+id/txtQuantityField2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                     android:hint="@string/qtty"
-                    android:layout_marginHorizontal="6dp"
+                    android:layout_marginHorizontal="2dp"
                     android:layout_marginVertical="4dp"
                     app:helperTextEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/txtQtty2"
+                        android:id="@+id/txtQuantity2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:imeOptions="actionNext"
+                        android:nextFocusForward="@+id/txtCName"
+                        android:textAlignment="center"
+                        android:textSize="16sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:text="@string/good"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="4dp"
+                        android:background="@color/grey"
+                        android:text="0"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textAlignment="center"
+                        android:gravity="center"
+                        android:layout_marginEnd="8dp"/>
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/qrcode"/>
+                </LinearLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/txtCtNrField3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                    android:hint="@string/c_name"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_marginVertical="4dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtCtNr3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:textAlignment="center"
+                        android:textSize="16sp"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/txtPartNrField3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                    android:hint="@string/part_nr"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_marginVertical="4dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtPartNr3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:textAlignment="center"
+                        android:textSize="16sp"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/txtDNrField3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                    android:hint="@string/cust_n"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_marginVertical="4dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtDNr3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:textAlignment="center"
+                        android:textSize="16sp"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/txtQuantityField3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                    android:hint="@string/qtty"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_marginVertical="4dp"
+                    app:helperTextEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtQuantity3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
                         android:imeOptions="actionNext"
                         android:textAlignment="center"
-                        android:textSize="18sp"/>
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtOrderNrField"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-                    android:hint="@string/order_nr"
-                    android:layout_marginHorizontal="6dp"
-                    android:layout_marginVertical="4dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/txtOrderNr"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
-                        android:inputType="text"
-                        android:textAlignment="center"
-                        android:textSize="18sp"/>
+                        android:textSize="16sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -299,63 +511,96 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:baselineAligned="false"
             android:orientation="horizontal"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="10dp">
+            android:padding="10dp">
 
-            <RelativeLayout
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:gravity="center">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/smallLabelListView"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:background="@drawable/ed_bg"
-                    android:layout_toStartOf="@id/btnPlus1" />
+                    android:layout_margin="6dp"/>
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnPlus1"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_alignParentEnd="true"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="6dp"
                     android:text="+"
                     android:textSize="18sp"
                     android:enabled="false"/>
-            </RelativeLayout>
+            </LinearLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:layout_marginStart="20dp">
+                android:orientation="vertical"
+                android:gravity="center">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/bigLabelListView"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:background="@drawable/ed_bg"
-                    android:layout_toStartOf="@id/btnPlus2"/>
+                    android:layout_margin="6dp"/>
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnPlus2"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_alignParentEnd="true"
                     android:layout_marginStart="10dp"
                     android:text="+"
                     android:textSize="18sp"
                     android:enabled="false"/>
-            </RelativeLayout>
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnLogout"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:text="@string/logout"
+                android:textSize="20sp"
+                android:textAllCaps="false" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnReset"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:layout_marginStart="20dp"
+                android:text="@string/clear"
+                android:textSize="20sp"
+                android:textAllCaps="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -372,44 +617,12 @@
                 android:textAllCaps="false" />
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnUpload"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight="1"
-                android:layout_marginStart="20dp"
-                android:text="@string/upload"
-                android:textSize="20sp"
-                android:textAllCaps="true"
-                android:enabled="false"
-                android:focusable="true"
-                android:focusableInTouchMode="true"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            style="?android:attr/buttonBarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp">
-
-            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnNew"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
-                android:text="@string/new_button"
-                android:textSize="20sp"
-                android:textAllCaps="false" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnReset"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight="1"
                 android:layout_marginStart="20dp"
-                android:text="@string/clear"
+                android:text="@string/new_button"
                 android:textSize="20sp"
                 android:textAllCaps="false" />
 

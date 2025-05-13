@@ -1,13 +1,9 @@
 package com.qrcode.refilling;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -18,9 +14,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.journeyapps.barcodescanner.CaptureActivity;
-
-import java.io.FileInputStream;
-import java.util.Iterator;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -78,13 +71,13 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.btnLogin).setOnClickListener(v -> {
-            if (txtUserName.getText().toString().isEmpty()) {
-                Toast.makeText(this, "please enter username.", Toast.LENGTH_SHORT).show();
-            } else if (txtPassword.getText().toString().isEmpty()) {
-                Toast.makeText(this, "please enter password.", Toast.LENGTH_SHORT).show();
-            } else {
+//            if (txtUserName.getText().toString().isEmpty()) {
+//                Toast.makeText(this, "please enter username.", Toast.LENGTH_SHORT).show();
+//            } else if (txtPassword.getText().toString().isEmpty()) {
+//                Toast.makeText(this, "please enter password.", Toast.LENGTH_SHORT).show();
+//            } else {
                 login(txtUserName.getText().toString(), txtPassword.getText().toString());
-            }
+//            }
         });
 
     }
@@ -129,10 +122,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login(String userName, String password) {
-        if (userName.equals("test") && password.equals("1234")) {
+//        if (userName.equals("test") && password.equals("1234")) {
             Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("UserName", userName);
             startActivity(intent);
-        }
+//        }
     }
 
 }

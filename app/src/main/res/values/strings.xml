@@ -3,17 +3,17 @@
 
     <string name="login" translatable="false">Login</string>
 
-    <string name="scan_label">SCAN LABEL</string>
     <string name="not_match">NOT MATCH!</string>
     <string name="match">MATCH</string>
     <string name="settings">Settings</string>
     <string name="upload">Upload</string>
 
-    <string name="small_label">Small Label</string>
-    <string name="big_label">Big Label</string>
+    <string name="carton">Carton</string>
+    <string name="minus">Minus</string>
+    <string name="good">Good</string>
 
     <string name="manual">Manual Entry</string>
-    <string name="scanned">Scanned</string>
+    <string name="scan">Scan</string>
     <string name="ct_nr">Ct.Nr</string>
     <string name="part_nr">PartNr</string>
     <string name="d_nr">D-Nr</string>
@@ -47,5 +47,6 @@
     <string name="add_label">Add label</string>
     <string name="add">Add</string>
     <string name="clear">Clear</string>
+    <string name="logout">Log out</string>
 
 </resources>

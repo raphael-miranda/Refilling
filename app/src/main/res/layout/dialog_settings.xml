@@ -134,7 +134,7 @@
                 android:id="@+id/checkboxManual"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:nextFocusForward="@id/txtCtNr"/>
+                android:nextFocusForward="@id/btnSave"/>
 
             <TextView
                 android:layout_width="wrap_content"
