@@ -245,7 +245,6 @@ public class MainActivity extends AppCompatActivity{
         checkUploadAvailable();
 
         AppCompatButton btnNew = findViewById(R.id.btnNew);
-        AppCompatButton btnReset = findViewById(R.id.btnReset);
 
         btnPlus1.setOnClickListener(view -> {
             showAddLabelDialog(true);
@@ -269,7 +268,7 @@ public class MainActivity extends AppCompatActivity{
 
         btnNew.setOnClickListener(view -> onNew());
 
-        btnReset.setOnClickListener(view -> reset());
+        findViewById(R.id.btnClear).setOnClickListener(view -> reset());
 
         findViewById(R.id.btnSettings).setOnClickListener(view -> showSettingsDialog());
 
@@ -278,8 +277,9 @@ public class MainActivity extends AppCompatActivity{
         });
 
         checkManual();
-        initLeftScan();
-        initRightScan();
+        initFirstScan();
+        initSecondScan();
+        initThirdScan();
 
         storagePermissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
@@ -536,7 +536,101 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    private void initLeftScan() {
+    private void initFirstScan() {
+        SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+        boolean isManual = sharedPreferences.getBoolean(IS_MANUAL, false);
+
+        txtCtNr1.requestFocus();
+        if (!isManual) {
+            txtCtNr1.setShowSoftInputOnFocus(false);
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        }
+        txtCtNr1.post(() -> txtCtNr1.setSelection(txtCtNr1.getText().length()));
+
+        txtCtNr1.setOnKeyListener((view, keyCode, event) -> {
+
+            if (keyCode==KeyEvent.KEYCODE_ENTER)
+            {
+                // Just ignore the [Enter] key
+                return true;
+            }
+            // Handle all other keys in the default way
+            return (keyCode == KeyEvent.KEYCODE_ENTER);
+        });
+        txtCtNr1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String strCtNr = txtCtNr1.getText().toString();
+                int count = strCtNr.split(";").length;
+
+                if(count == 4) {
+                    txtPartNr1.setText(strCtNr.split(";")[1]);
+                    txtDNr1.setText(strCtNr.split(";")[2]);
+                    txtQuantity1.setText(strCtNr.split(";")[3]);
+                    txtCtNr1.setText(strCtNr.split(";")[0]);
+                    txtCtNr2.requestFocus();
+                }
+
+                if (!txtCtNr1.getText().toString().isEmpty()) {
+                    isCartonExisting();
+                    compare();
+                } else {
+                    txtCtNrField1.setErrorEnabled(false);
+                }
+            }
+        });
+
+        txtPartNr1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (!(txtPartNr2.getText().toString().isEmpty())) {
+                    compare();
+                }
+            }
+        });
+
+        txtQuantity1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (!(txtQuantity2.getText().toString().isEmpty())) {
+                    compare();
+                    txtCtNr2.requestFocus();
+                }
+            }
+        });
+    }
+
+    private void initSecondScan() {
         SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         boolean isManual = sharedPreferences.getBoolean(IS_MANUAL, false);
 
@@ -630,7 +724,7 @@ public class MainActivity extends AppCompatActivity{
         });
     }
 
-    private void initRightScan() {
+    private void initThirdScan() {
         txtCtNr3.setFocusable(true);
 
         txtCtNr3.post(() -> txtCtNr3.setSelection(txtCtNr3.getText().length()));
@@ -799,22 +893,28 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void compare() {
-        String strPartNr1 = txtPartNr2.getText().toString();
-        String strPartNr2 = txtPartNr3.getText().toString();
-        String strQtty1 = txtQuantity2.getText().toString();
-        String strQtty2 = txtQuantity3.getText().toString();
+        String strPartNr1 = txtPartNr1.getText().toString();
+        String strPartNr2 = txtPartNr2.getText().toString();
+        String strPartNr3 = txtPartNr3.getText().toString();
+        String strQtty1 = txtQuantity1.getText().toString();
+        String strQtty2 = txtQuantity2.getText().toString();
+        String strQtty3 = txtQuantity3.getText().toString();
 
-        int quantity1 = 0, quantity2 = 0;
+        int quantity1 = 0, quantity2 = 0, quantity3 = 0;
         if (!strQtty1.isEmpty()) {
             quantity1 = Integer.parseInt(strQtty1);
         }
         if (!strQtty2.isEmpty()) {
             quantity2 = Integer.parseInt(strQtty2);
         }
+        if (!strQtty3.isEmpty()) {
+            quantity3 = Integer.parseInt(strQtty3);
+        }
 
         int result = 0;
-        if (!strPartNr1.isEmpty() && strPartNr1.equals(strPartNr2)) {
+        if (!strPartNr1.isEmpty() && strPartNr1.equals(strPartNr2) && strPartNr1.equals(strPartNr3)) {
             result += 1;
+            txtPartNr1.setBackgroundTintList(greenColors);
             txtPartNr2.setBackgroundTintList(greenColors);
             txtPartNr3.setBackgroundTintList(greenColors);
 
@@ -826,15 +926,15 @@ public class MainActivity extends AppCompatActivity{
                     if (strPartNr1.equals(partNr)) {
                         String strQtty = smallLabelData.getOrDefault(Utils.QUANTITY, "0");
                         int quantity = Integer.parseInt(strQtty);
-                        quantity1 += quantity;
+                        quantity2 += quantity;
                         quantityHelperString.append(strQtty).append(" + ");
                     }
                 }
                 if (quantityHelperString.toString().isEmpty()) {
                     txtQuantityField2.setHelperText("");
                 } else {
-                    quantityHelperString.append(strQtty1.isEmpty() ? "0" : strQtty1);
-                    quantityHelperString.append(" = ").append(quantity1);
+                    quantityHelperString.append(strQtty2.isEmpty() ? "0" : strQtty2);
+                    quantityHelperString.append(" = ").append(quantity2);
                     txtQuantityField2.setHelperText(quantityHelperString.toString());
                 }
             } else {
@@ -846,18 +946,18 @@ public class MainActivity extends AppCompatActivity{
                 List<HashMap<String, String>> arrBigLabels = bigListAdapter.getItems();
                 for (HashMap<String, String> bigLabelData: arrBigLabels) {
                     String partNr = bigLabelData.getOrDefault(Utils.PART_NR, "");
-                    if (strPartNr2.equals(partNr)) {
+                    if (strPartNr3.equals(partNr)) {
                         String strQtty = bigLabelData.getOrDefault(Utils.QUANTITY, "0");
                         int quantity = Integer.parseInt(strQtty);
-                        quantity2 += quantity;
+                        quantity3 += quantity;
                         quantityHelperString.append(strQtty).append(" + ");
                     }
                 }
                 if (quantityHelperString.toString().isEmpty()) {
                     txtQuantityField3.setHelperText("");
                 } else {
-                    quantityHelperString.append(strQtty1.isEmpty() ? "0" : strQtty1);
-                    quantityHelperString.append(" = ").append(quantity2);
+                    quantityHelperString.append(strQtty3.isEmpty() ? "0" : strQtty3);
+                    quantityHelperString.append(" = ").append(quantity3);
                     txtQuantityField3.setHelperText(quantityHelperString.toString());
                 }
 
@@ -866,11 +966,12 @@ public class MainActivity extends AppCompatActivity{
                 txtQuantityField3.setHelperText("");
             }
         } else {
+            txtPartNr1.setBackgroundTintList(redColors);
             txtPartNr2.setBackgroundTintList(redColors);
             txtPartNr3.setBackgroundTintList(redColors);
         }
 
-        if (quantity1 != 0 && (quantity1 == quantity2)) {
+        if (quantity2 != 0 && (quantity2 == quantity3)) {
             result += 1;
             txtQuantity2.setBackgroundTintList(greenColors);
             txtQuantity3.setBackgroundTintList(greenColors);
@@ -906,7 +1007,6 @@ public class MainActivity extends AppCompatActivity{
     TextInputEditText txtDialogPartNr;
     TextInputEditText txtDialogDNr;
     TextInputEditText txtDialogQuantity;
-    TextInputEditText txtDialogOrderNr;
     MaterialButton btnDialogAdd;
 
     private void showAddLabelDialog(boolean isLeft) {
@@ -928,7 +1028,6 @@ public class MainActivity extends AppCompatActivity{
         txtDialogPartNr = dialogView.findViewById(R.id.txtPartNr);
         txtDialogDNr = dialogView.findViewById(R.id.txtDNr);
         txtDialogQuantity = dialogView.findViewById(R.id.txtQuantity);
-        txtDialogOrderNr = dialogView.findViewById(R.id.txtOrderNr);
 
         btnDialogAdd = dialogView.findViewById(R.id.btnAdd);
         MaterialButton btnClear = dialogView.findViewById(R.id.btnClear);
@@ -936,16 +1035,8 @@ public class MainActivity extends AppCompatActivity{
 
         if (isLeft) {
             txtDlgTitle.setText("Add Minus Label");
-            dlgCartonNumberField.setHint(getString(R.string.ct_nr));
-            dlgPartNrField.setHint(getString(R.string.part_nr));
-            dlgDNrField.setHint(getString(R.string.d_nr));
-            dlgQuantityField.setHint(R.string.qtty);
         } else {
             txtDlgTitle.setText("Add Good Label");
-            dlgCartonNumberField.setHint(getString(R.string.c_name));
-            dlgPartNrField.setHint(getString(R.string.part_nr));
-            dlgDNrField.setHint(getString(R.string.cust_n));
-            dlgQuantityField.setHint(R.string.qtty);
         }
 
         SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
@@ -959,12 +1050,10 @@ public class MainActivity extends AppCompatActivity{
             txtDialogPartNr.setEnabled(false);
             txtDialogDNr.setEnabled(false);
             txtDialogQuantity.setEnabled(false);
-            txtDialogOrderNr.setEnabled(false);
         } else {
             txtDialogPartNr.setEnabled(true);
             txtDialogDNr.setEnabled(true);
             txtDialogQuantity.setEnabled(true);
-            txtDialogOrderNr.setEnabled(true);
         }
         txtDialogCartonNumber.post(() -> txtDialogCartonNumber.setSelection(txtDialogCartonNumber.getText().length()));
 
@@ -989,7 +1078,6 @@ public class MainActivity extends AppCompatActivity{
                     txtDialogPartNr.setText(strCartonNumber.split(";")[1]);
                     txtDialogDNr.setText(strCartonNumber.split(";")[2]);
                     txtDialogQuantity.setText(strCartonNumber.split(";")[3]);
-                    txtDialogOrderNr.setText(strCartonNumber.split(";")[4]);
                     txtDialogCartonNumber.setText(strCartonNumber.split(";")[0]);
                 }
             }
@@ -1008,7 +1096,6 @@ public class MainActivity extends AppCompatActivity{
             String partNr = txtDialogPartNr.getText().toString();
             String dNr = txtDialogDNr.getText().toString();
             String quantity = txtDialogQuantity.getText().toString();
-            String orderNr = isLeft ? "" : txtDialogOrderNr.getText().toString();
 
             if (isLeft) {
                 HashMap<String, String> smallLabelData = new HashMap<>();
@@ -1026,7 +1113,7 @@ public class MainActivity extends AppCompatActivity{
                 HashMap<String, String> bigLabelData = new HashMap<>();
                 bigLabelData.put(Utils.CARTON_NR, txtCtNr3.getText().toString());
                 bigLabelData.put(Utils.PART_NR, txtPartNr3.getText().toString());
-                bigLabelData.put(Utils.CUST_N, txtDNr3.getText().toString());
+                bigLabelData.put(Utils.D_NR, txtDNr3.getText().toString());
                 bigLabelData.put(Utils.QUANTITY, txtQuantity3.getText().toString());
                 bigListAdapter.addItem(bigLabelData);
 
@@ -1044,9 +1131,6 @@ public class MainActivity extends AppCompatActivity{
             txtDialogPartNr.setText("");
             txtDialogDNr.setText("");
             txtDialogQuantity.setText("");
-            if (!isLeft) {
-                txtDialogOrderNr.setText("");
-            }
         });
 
         btnCancel.setOnClickListener(view -> dialog.dismiss());
@@ -1154,7 +1238,7 @@ public class MainActivity extends AppCompatActivity{
         HashMap<String, String> bigLabelData = new HashMap<>();
         bigLabelData.put(Utils.CARTON_NR, txtCtNr3.getText().toString());
         bigLabelData.put(Utils.PART_NR, txtPartNr3.getText().toString());
-        bigLabelData.put(Utils.CUST_N, txtDNr3.getText().toString());
+        bigLabelData.put(Utils.D_NR, txtDNr3.getText().toString());
         bigLabelData.put(Utils.QUANTITY, txtQuantity3.getText().toString());
         bigListAdapter.addItem(bigLabelData);
 
@@ -1175,53 +1259,60 @@ public class MainActivity extends AppCompatActivity{
     private String generateStringToSave(int scannedNumber) {
         StringBuilder result = new StringBuilder();
 
+        String ctNr1 = txtCtNr1.getText().toString();
+        String partNr1 = txtPartNr1.getText().toString();
+        String dNr1 = txtDNr1.getText().toString();
+        String qtty1 = txtQuantity1.getText().toString();
+        String strCartonLabel = String.format(Locale.getDefault(),
+                "%-11s ; Scan%03d ; %-12s ; %-14s ; %-14s ; %-12s;\n",
+                "CartonLabel", scannedNumber + 1, ctNr1, partNr1, dNr1, qtty1);
+        result.append(strCartonLabel);
+
         HashMap<String, String> smallLabel = smallListAdapter.getItem(0);
-        String ctNr = smallLabel.getOrDefault(Utils.CARTON_NR, "");
-        String partNr1 = smallLabel.getOrDefault(Utils.PART_NR, "");
-        String dNr = smallLabel.getOrDefault(Utils.D_NR, "");
-        String qtty1 = smallLabel.getOrDefault(Utils.QUANTITY, "");
-        String strSmallLabel = String.format(Locale.getDefault(),
-                "%-11s ; SCAN%03d ; %-12s ; %-14s ; %-14s ; %-12s;\n",
-                "SmallLabel", scannedNumber + 1, ctNr, partNr1, dNr, qtty1);
-        result.append(strSmallLabel);
+        String ctNr2 = smallLabel.getOrDefault(Utils.CARTON_NR, "");
+        String partNr2 = smallLabel.getOrDefault(Utils.PART_NR, "");
+        String dNr2 = smallLabel.getOrDefault(Utils.D_NR, "");
+        String qtty2 = smallLabel.getOrDefault(Utils.QUANTITY, "");
+        String strMinusLabel = String.format(Locale.getDefault(),
+                "%-11s ; Scan%03d ; %-12s ; %-14s ; %-14s ; %-12s;\n",
+                "MinusLabel", scannedNumber + 1, ctNr2, partNr2, dNr2, qtty2);
+        result.append(strMinusLabel);
 
         HashMap<String, String> bigLabel = bigListAdapter.getItem(0);
-        String cName = bigLabel.getOrDefault(Utils.CARTON_NR, "");
-        String partNr2 = bigLabel.getOrDefault(Utils.PART_NR, "");
-        String custN = bigLabel.getOrDefault(Utils.CUST_N, "");
-        String qtty2 = bigLabel.getOrDefault(Utils.QUANTITY, "");
-        String orderNr = bigLabel.getOrDefault(Utils.ORDER_NR, "");
+        String ctNr3 = bigLabel.getOrDefault(Utils.CARTON_NR, "");
+        String partNr3 = bigLabel.getOrDefault(Utils.PART_NR, "");
+        String dNr3 = bigLabel.getOrDefault(Utils.D_NR, "");
+        String qtty3 = bigLabel.getOrDefault(Utils.QUANTITY, "");
         String strBigLabel = String.format(Locale.getDefault(),
-                "%-11s ; SCAN%03d ; %-12s ; %-14s ; %-14s ; %-12s; %-20s;\n",
-                "BigLabel", scannedNumber + 1, cName, partNr2, custN, qtty2, orderNr);
+                "%-11s ; Scan%03d ; %-12s ; %-14s ; %-14s ; %-12s;\n",
+                "GoodLabel", scannedNumber + 1, ctNr3, partNr3, dNr3, qtty3);
         result.append(strBigLabel);
 
         for (int i = 1; i < smallListAdapter.getItemCount(); i++) {
             smallLabel = smallListAdapter.getItem(i);
 
-            ctNr = smallLabel.getOrDefault(Utils.CARTON_NR, "");
-            partNr1 = smallLabel.getOrDefault(Utils.PART_NR, "");
-            dNr = smallLabel.getOrDefault(Utils.D_NR, "");
-            qtty1 = smallLabel.getOrDefault(Utils.QUANTITY, "");
+            ctNr2 = smallLabel.getOrDefault(Utils.CARTON_NR, "");
+            partNr2 = smallLabel.getOrDefault(Utils.PART_NR, "");
+            dNr2 = smallLabel.getOrDefault(Utils.D_NR, "");
+            qtty2 = smallLabel.getOrDefault(Utils.QUANTITY, "");
 
-            strSmallLabel = String.format(Locale.getDefault(),
-                    "%-11s ; SCAN%03d ; %-12s ; %-14s ; %-14s ; %-12s;\n",
-                    "SmallLabel+", scannedNumber + 1, ctNr, partNr1, dNr, qtty1);
+            strMinusLabel = String.format(Locale.getDefault(),
+                    "%-11s ; Scan%03d ; %-12s ; %-14s ; %-14s ; %-12s;\n",
+                    "MinusLabel+", scannedNumber + 1, ctNr2, partNr2, dNr2, qtty2);
 
-            result.append(strSmallLabel);
+            result.append(strMinusLabel);
         }
 
         for (int i = 1; i < bigListAdapter.getItemCount(); i++) {
             bigLabel = bigListAdapter.getItem(i);
-            cName = bigLabel.getOrDefault(Utils.CARTON_NR, "");
-            partNr2 = bigLabel.getOrDefault(Utils.PART_NR, "");
-            custN = bigLabel.getOrDefault(Utils.CUST_N, "");
-            qtty2 = bigLabel.getOrDefault(Utils.QUANTITY, "");
-            orderNr = bigLabel.getOrDefault(Utils.ORDER_NR, "");
+            ctNr3 = bigLabel.getOrDefault(Utils.CARTON_NR, "");
+            partNr3 = bigLabel.getOrDefault(Utils.PART_NR, "");
+            dNr3 = bigLabel.getOrDefault(Utils.D_NR, "");
+            qtty3 = bigLabel.getOrDefault(Utils.QUANTITY, "");
 
             strBigLabel = String.format(Locale.getDefault(),
-                    "%-11s ; SCAN%03d ; %-12s ; %-14s ; %-14s ; %-12s; %-20s;\n",
-                    "BigLabel+", scannedNumber + 1, cName, partNr2, custN, qtty2, orderNr);
+                    "%-11s ; Scan%03d ; %-12s ; %-14s ; %-14s ; %-12s;\n",
+                    "GoodLabel+", scannedNumber + 1, ctNr3, partNr3, dNr3, qtty3);
 
             result.append(strBigLabel);
         }
@@ -1248,10 +1339,16 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void reset() {
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Code to run after delay
+//        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                // Code to run after delay
+                txtCtNr1.setText("");
+                txtPartNr1.setText("");
+                txtDNr1.setText("");
+                txtQuantity1.setText("");
+                txtQuantityField1.setHelperText("");
+
                 txtCtNr2.setText("");
                 txtPartNr2.setText("");
                 txtDNr2.setText("");
@@ -1267,17 +1364,19 @@ public class MainActivity extends AppCompatActivity{
                 smallListAdapter.clear();
                 bigListAdapter.clear();
 
+                txtPartNr1.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
                 txtPartNr2.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
                 txtPartNr3.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
+                txtQuantity1.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
                 txtQuantity2.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
                 txtQuantity3.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
 
                 btnPlus1.setEnabled(false);
                 btnPlus2.setEnabled(false);
 
-                txtCtNr2.requestFocus();
-            }
-        }, 1000);
+                txtCtNr1.requestFocus();
+//            }
+//        }, 1000);
 
 
     }
@@ -1408,7 +1507,7 @@ public class MainActivity extends AppCompatActivity{
             editor.apply();
         }
 
-        String fileName = String.format(Locale.getDefault(), "SCAN%s-%02d.txt", strDate, fileCounter);
+        String fileName = String.format(Locale.getDefault(), "refillScan%s-%02d.txt", strDate, fileCounter);
 
         return fileName;
     }

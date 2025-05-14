@@ -87,7 +87,7 @@ public class ViewDataActivity extends AppCompatActivity {
             editor.apply();
         }
 
-        String fileName = String.format(Locale.getDefault(), "SCAN%s-%02d.txt", strDate, fileCounter);
+        String fileName = String.format(Locale.getDefault(), "refillScan%s-%02d.txt", strDate, fileCounter);
 
         return fileName;
     }

@@ -19,10 +19,6 @@
     <string name="d_nr">D-Nr</string>
     <string name="qtty">Qtty</string>
 
-    <string name="c_name">C.Name</string>
-    <string name="cust_n">Cust-N</string>
-    <string name="order_nr">OrderNr</string>
-
     <string name="view_data">View Data</string>
     <string name="next">Next</string>
     <string name="new_button">New</string>

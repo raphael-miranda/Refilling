@@ -178,13 +178,13 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtCtNr1"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="50dp"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:textAlignment="center"
-                        android:textSize="16sp"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true" />
+                        android:textSize="12sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -201,11 +201,12 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtPartNr1"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="50dp"
                         android:imeOptions="actionNext"
                         android:inputType="text"
+                        android:maxLength="15"
                         android:textAlignment="center"
-                        android:textSize="16sp"/>
+                        android:textSize="12sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -222,11 +223,12 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtDNr1"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="50dp"
                         android:imeOptions="actionNext"
                         android:inputType="text"
+                        android:maxLength="15"
                         android:textAlignment="center"
-                        android:textSize="16sp"/>
+                        android:textSize="12sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -243,12 +245,13 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtQuantity1"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"
+                        android:layout_height="50dp"
                         android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLength="15"
                         android:nextFocusForward="@+id/txtCName"
                         android:textAlignment="center"
-                        android:textSize="16sp" />
+                        android:textSize="12sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -306,13 +309,13 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtCtNr2"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="50dp"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:textAlignment="center"
-                        android:textSize="16sp"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true" />
+                        android:textSize="12sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -329,11 +332,12 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtPartNr2"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="50dp"
                         android:imeOptions="actionNext"
                         android:inputType="text"
+                        android:maxLength="15"
                         android:textAlignment="center"
-                        android:textSize="16sp"/>
+                        android:textSize="12sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -350,11 +354,12 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtDNr2"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="50dp"
                         android:imeOptions="actionNext"
                         android:inputType="text"
+                        android:maxLength="15"
                         android:textAlignment="center"
-                        android:textSize="16sp"/>
+                        android:textSize="12sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -371,12 +376,13 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtQuantity2"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"
+                        android:layout_height="50dp"
                         android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLength="15"
                         android:nextFocusForward="@+id/txtCName"
                         android:textAlignment="center"
-                        android:textSize="16sp" />
+                        android:textSize="12sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -426,20 +432,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-                    android:hint="@string/c_name"
+                    android:hint="@string/ct_nr"
                     android:layout_marginHorizontal="2dp"
                     android:layout_marginVertical="4dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtCtNr3"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="50dp"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:textAlignment="center"
-                        android:textSize="16sp"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"/>
+                        android:textSize="12sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -455,11 +461,12 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtPartNr3"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="50dp"
                         android:imeOptions="actionNext"
                         android:inputType="text"
+                        android:maxLength="15"
                         android:textAlignment="center"
-                        android:textSize="16sp"/>
+                        android:textSize="12sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -468,18 +475,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-                    android:hint="@string/cust_n"
+                    android:hint="@string/d_nr"
                     android:layout_marginHorizontal="2dp"
                     android:layout_marginVertical="4dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtDNr3"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="50dp"
                         android:imeOptions="actionNext"
                         android:inputType="text"
+                        android:maxLength="15"
                         android:textAlignment="center"
-                        android:textSize="16sp"/>
+                        android:textSize="12sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -496,11 +504,12 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtQuantity3"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"
+                        android:layout_height="50dp"
                         android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLength="15"
                         android:textAlignment="center"
-                        android:textSize="16sp"/>
+                        android:textSize="12sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -586,7 +595,7 @@
                 android:textAllCaps="false" />
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnReset"
+                android:id="@+id/btnClear"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"

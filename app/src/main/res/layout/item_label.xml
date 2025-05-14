@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/txtCartonNumber"
-        android:layout_width="30dp"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:textSize="16sp"/>
 
