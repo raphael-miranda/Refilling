@@ -11,6 +11,7 @@ activity = "1.10.0"
 constraintlayout = "2.2.1"
 dexter = "6.2.3"
 jsch = "0.1.55"
+poiOoxml = "5.4.1"
 zxing-android-embedded = "4.3.0"
 zxing-core = "3.4.1"
 
@@ -26,6 +27,7 @@ activity = { group = "androidx.activity", name = "activity", version.ref = "acti
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 dexter ={ group = "com.karumi", name = "dexter", version.ref = "dexter" }
 jsch = { module = "com.jcraft:jsch", version.ref = "jsch" }
+poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poiOoxml" }
 zxingandroidembedded = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxing-android-embedded" }
 zxingcore = { group = "com.google.zxing", name = "core", version.ref = "zxing-core" }
 

@@ -49,4 +49,7 @@ dependencies {
 
     implementation(libs.zxingandroidembedded)
     implementation(libs.zxingcore)
+
+    implementation(libs.poi.ooxml)
+
 }

@@ -63,16 +63,23 @@ import com.karumi.dexter.listener.single.PermissionListener;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -978,7 +985,7 @@ public class MainActivity extends AppCompatActivity{
             txtPartNr3.setBackgroundTintList(redColors);
         }
 
-        if (quantity2 != 0 && quantity3 != 0) {
+        if (quantity2 > 0 && quantity3 > 0) {
             if (quantity2 == quantity3) {
                 result += 1;
                 txtQuantity2.setBackgroundTintList(greenColors);
@@ -1261,7 +1268,7 @@ public class MainActivity extends AppCompatActivity{
 
         SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         int scannedNumber = sharedPreferences.getInt(SCANNED_NUMBER, 0);
-        saveData(generateStringToSave(scannedNumber));
+        saveData(scannedNumber);
 
         // increase Scanned Number
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -1273,37 +1280,31 @@ public class MainActivity extends AppCompatActivity{
         checkUploadAvailable();
     }
 
-    private String generateStringToSave(int scannedNumber) {
-        StringBuilder result = new StringBuilder();
+    private void saveData(int scannedNumber) {
+
+        ArrayList<List<String>> result = new ArrayList<>();
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault());
+        String currentTime = simpleDateFormat.format(new Date());
+
+        String scanLabel = String.format(Locale.getDefault(), "Scan%03d", scannedNumber + 1);
+
 
         String ctNr1 = txtCtNr1.getText().toString();
         String partNr1 = txtPartNr1.getText().toString();
         String dNr1 = txtDNr1.getText().toString();
         String qtty1 = txtQuantity1.getText().toString();
-        String strCartonLabel = String.format(Locale.getDefault(),
-                "%-11s ; Scan%03d ; %-12s ; %-14s ; %-14s ; %-12s;\n",
-                "CartonLabel", scannedNumber + 1, ctNr1, partNr1, dNr1, qtty1);
-        result.append(strCartonLabel);
+        List<String> rowCartonData = Arrays.asList(mUserName, currentTime, "CartonLabel", scanLabel, ctNr1, partNr1, dNr1, qtty1);
+        result.add(rowCartonData);
 
         HashMap<String, String> smallLabel = smallListAdapter.getItem(0);
         String ctNr2 = smallLabel.getOrDefault(Utils.CARTON_NR, "");
         String partNr2 = smallLabel.getOrDefault(Utils.PART_NR, "");
         String dNr2 = smallLabel.getOrDefault(Utils.D_NR, "");
         String qtty2 = smallLabel.getOrDefault(Utils.QUANTITY, "");
-        String strMinusLabel = String.format(Locale.getDefault(),
-                "%-11s ; Scan%03d ; %-12s ; %-14s ; %-14s ; %-12s;\n",
-                "MinusLabel", scannedNumber + 1, ctNr2, partNr2, dNr2, qtty2);
-        result.append(strMinusLabel);
 
-        HashMap<String, String> bigLabel = bigListAdapter.getItem(0);
-        String ctNr3 = bigLabel.getOrDefault(Utils.CARTON_NR, "");
-        String partNr3 = bigLabel.getOrDefault(Utils.PART_NR, "");
-        String dNr3 = bigLabel.getOrDefault(Utils.D_NR, "");
-        String qtty3 = bigLabel.getOrDefault(Utils.QUANTITY, "");
-        String strBigLabel = String.format(Locale.getDefault(),
-                "%-11s ; Scan%03d ; %-12s ; %-14s ; %-14s ; %-12s;\n",
-                "GoodLabel", scannedNumber + 1, ctNr3, partNr3, dNr3, qtty3);
-        result.append(strBigLabel);
+        List<String> rowMinusData = Arrays.asList(mUserName, currentTime, "MinusLabel", scanLabel, ctNr2, partNr2, dNr2, qtty2);
+        result.add(rowMinusData);
 
         for (int i = 1; i < smallListAdapter.getItemCount(); i++) {
             smallLabel = smallListAdapter.getItem(i);
@@ -1313,12 +1314,18 @@ public class MainActivity extends AppCompatActivity{
             dNr2 = smallLabel.getOrDefault(Utils.D_NR, "");
             qtty2 = smallLabel.getOrDefault(Utils.QUANTITY, "");
 
-            strMinusLabel = String.format(Locale.getDefault(),
-                    "%-11s ; Scan%03d ; %-12s ; %-14s ; %-14s ; %-12s;\n",
-                    "MinusLabel+", scannedNumber + 1, ctNr2, partNr2, dNr2, qtty2);
-
-            result.append(strMinusLabel);
+            List<String> rowMinusPlusData = Arrays.asList(mUserName, currentTime, "MinusLabel+", scanLabel, ctNr2, partNr2, dNr2, qtty2);
+            result.add(rowMinusPlusData);
         }
+
+        HashMap<String, String> bigLabel = bigListAdapter.getItem(0);
+        String ctNr3 = bigLabel.getOrDefault(Utils.CARTON_NR, "");
+        String partNr3 = bigLabel.getOrDefault(Utils.PART_NR, "");
+        String dNr3 = bigLabel.getOrDefault(Utils.D_NR, "");
+        String qtty3 = bigLabel.getOrDefault(Utils.QUANTITY, "");
+
+        List<String> rowGoodData = Arrays.asList(mUserName, currentTime, "GoodLabel", scanLabel, ctNr3, partNr3, dNr3, qtty3);
+        result.add(rowGoodData);
 
         for (int i = 1; i < bigListAdapter.getItemCount(); i++) {
             bigLabel = bigListAdapter.getItem(i);
@@ -1327,32 +1334,88 @@ public class MainActivity extends AppCompatActivity{
             dNr3 = bigLabel.getOrDefault(Utils.D_NR, "");
             qtty3 = bigLabel.getOrDefault(Utils.QUANTITY, "");
 
-            strBigLabel = String.format(Locale.getDefault(),
-                    "%-11s ; Scan%03d ; %-12s ; %-14s ; %-14s ; %-12s;\n",
-                    "GoodLabel+", scannedNumber + 1, ctNr3, partNr3, dNr3, qtty3);
-
-            result.append(strBigLabel);
+            List<String> rowGoodPlusData = Arrays.asList(mUserName, currentTime, "GoodLabel+", scanLabel, ctNr3, partNr3, dNr3, qtty3);
+            result.add(rowGoodPlusData);
         }
-        return result.toString();
+
+        appendToExcel(result);
     }
 
-    private void saveData(String strData) {
 
-        String fileName = getFileName();
+    private void appendToExcel(ArrayList<List<String>> result) {
 
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            File dir = Utils.getDocumentsDirectory(this);
-            File file = new File(dir, fileName);
-            try (FileWriter writer = new FileWriter(file, true)) {
-                writer.append(strData);
-                System.out.println("File saved to: " + file.getAbsolutePath());
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            String fileName = getFileName();
+            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                File dir = Utils.getDocumentsDirectory(this);
+                File file = new File(dir, fileName);
+                if (!file.exists()) {
+                    createExcelFile(file);
+                }
+
+                FileInputStream fis = new FileInputStream(file);
+                Workbook workbook = new XSSFWorkbook(fis);
+                Sheet sheet = workbook.getSheetAt(0); // or getSheet("SheetName")
+
+                for (List<String> rowData : result) {
+                    int lastRowNum = sheet.getLastRowNum();
+                    Row newRow = sheet.createRow(lastRowNum + 1);
+
+                    for (int i = 0; i < rowData.size(); i++) {
+                        Cell cell = newRow.createCell(i);
+                        cell.setCellValue(rowData.get(i));
+                    }
+                }
+
+                fis.close(); // important
+
+                FileOutputStream fos = new FileOutputStream(file);
+                workbook.write(fos);
+                workbook.close();
+                fos.close();
+
+                Log.d("Excel", "Data appended successfully.");
+            } else {
+                System.out.println("External storage not available.");
             }
-        } else {
-            System.out.println("External storage not available.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("Excel", "Error appending data: " + e.getMessage());
         }
+    }
 
+    private void createExcelFile(File file) {
+        try {
+            if (!file.exists()) {
+                // Create a new workbook and sheet
+                Workbook workbook = new XSSFWorkbook();
+                Sheet sheet = workbook.createSheet("Sheet1");
+
+                // (Optional) Create header row
+                Row header = sheet.createRow(0);
+                header.createCell(0).setCellValue("User Name");
+                header.createCell(1).setCellValue("Time");
+                header.createCell(2).setCellValue("Label");
+                header.createCell(3).setCellValue("Scan Number");
+                header.createCell(4).setCellValue("Ct.Nr");
+                header.createCell(5).setCellValue("PartNr");
+                header.createCell(6).setCellValue("D-Nr");
+                header.createCell(7).setCellValue("Qtty");
+
+                // Save to file
+                FileOutputStream fos = new FileOutputStream(file);
+                workbook.write(fos);
+                fos.close();
+                workbook.close();
+
+                Log.d("Excel", "Excel file created.");
+            } else {
+                Log.d("Excel", "Excel file already exists.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("Excel", "Failed to create Excel file: " + e.getMessage());
+        }
     }
 
     private void reset() {
@@ -1518,7 +1581,7 @@ public class MainActivity extends AppCompatActivity{
             editor.apply();
         }
 
-        String fileName = String.format(Locale.getDefault(), "refillScan%s-%02d.txt", strDate, fileCounter);
+        String fileName = String.format(Locale.getDefault(), "refillScan%s-%02d.xlsx", strDate, fileCounter);
 
         return fileName;
     }
@@ -1735,6 +1798,7 @@ public class MainActivity extends AppCompatActivity{
         editor.putInt(SCANNED_NUMBER, 0);
         editor.apply();
 
+        checkUploadAvailable();
     }
 
     private void showInformationDialog(String title, String message) {
