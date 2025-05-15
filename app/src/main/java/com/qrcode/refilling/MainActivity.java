@@ -74,7 +74,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -118,6 +117,8 @@ public class MainActivity extends AppCompatActivity{
     private RecyclerView listSmallLabels, listBigLabels;
     private AppCompatButton btnPlus1, btnPlus2;
     private AppCompatButton btnUpload, btnNext;
+
+    private boolean isReseting = false;
 
     LabelsAdapter smallListAdapter = new LabelsAdapter(new ArrayList<>());
     LabelsAdapter bigListAdapter = new LabelsAdapter(new ArrayList<>());
@@ -883,6 +884,8 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void compare() {
+        if (isReseting) return;
+
         String strCtNr1 = txtCtNr1.getText().toString();
         String strCtNr2 = txtCtNr2.getText().toString();
         String strCtNr3 = txtCtNr3.getText().toString();
@@ -1419,6 +1422,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void reset() {
+        isReseting = true;
 
         txtQuantity2.setText("");
         txtQuantity3.setText("");
@@ -1442,17 +1446,24 @@ public class MainActivity extends AppCompatActivity{
         smallListAdapter.clear();
         bigListAdapter.clear();
 
-        txtPartNr1.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
-        txtPartNr2.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
-        txtPartNr3.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
-        txtQuantity1.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
-        txtQuantity2.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
-        txtQuantity3.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
+        txtCtNr1.setBackgroundTintList(normalColors);
+        txtCtNr2.setBackgroundTintList(normalColors);
+        txtCtNr3.setBackgroundTintList(normalColors);
+        txtPartNr1.setBackgroundTintList(normalColors);
+        txtPartNr2.setBackgroundTintList(normalColors);
+        txtPartNr3.setBackgroundTintList(normalColors);
+        txtDNr1.setBackgroundTintList(normalColors);
+        txtDNr2.setBackgroundTintList(normalColors);
+        txtDNr3.setBackgroundTintList(normalColors);
+        txtQuantity1.setBackgroundTintList(normalColors);
+        txtQuantity2.setBackgroundTintList(normalColors);
+        txtQuantity3.setBackgroundTintList(normalColors);
 
         btnPlus1.setEnabled(false);
         btnPlus2.setEnabled(false);
 
         txtCtNr1.requestFocus();
+        isReseting = false;
     }
 
     private void upload() {
@@ -1777,7 +1788,7 @@ public class MainActivity extends AppCompatActivity{
             File[] files = dir.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    if (file.isFile() && file.getName().startsWith("SCAN") && file.getName().endsWith(".txt")) {
+                    if (file.isFile() && file.getName().startsWith("SCAN") && file.getName().endsWith(".xlsx")) {
                         boolean deleted = file.delete();
                         Log.d("FileDelete", file.getName() + (deleted ? " deleted." : " failed to delete."));
                     }

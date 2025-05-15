@@ -71,13 +71,13 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.btnLogin).setOnClickListener(v -> {
-//            if (txtUserName.getText().toString().isEmpty()) {
-//                Toast.makeText(this, "please enter username.", Toast.LENGTH_SHORT).show();
-//            } else if (txtPassword.getText().toString().isEmpty()) {
-//                Toast.makeText(this, "please enter password.", Toast.LENGTH_SHORT).show();
-//            } else {
+            if (txtUserName.getText().toString().isEmpty()) {
+                Toast.makeText(this, "please enter username.", Toast.LENGTH_SHORT).show();
+            } else if (txtPassword.getText().toString().isEmpty()) {
+                Toast.makeText(this, "please enter password.", Toast.LENGTH_SHORT).show();
+            } else {
                 login(txtUserName.getText().toString(), txtPassword.getText().toString());
-//            }
+            }
         });
 
     }
@@ -122,11 +122,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login(String userName, String password) {
-//        if (userName.equals("test") && password.equals("1234")) {
+        if (userName.equals("test") && password.equals("1234")) {
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("UserName", userName);
             startActivity(intent);
-//        }
+        } else {
+            Toast.makeText(this, "Invalid user name or password!", Toast.LENGTH_LONG).show();
+        }
     }
 
 }

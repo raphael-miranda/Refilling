@@ -6,26 +6,33 @@ import static com.qrcode.refilling.MainActivity.FILE_DATE;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.BufferedReader;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
 public class ViewDataActivity extends AppCompatActivity {
 
-    private TextView txtData;
+    private RecyclerView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,37 +45,61 @@ public class ViewDataActivity extends AppCompatActivity {
             return insets;
         });
 
-        txtData = findViewById(R.id.txtData);
-        String text = readTextFile();
-        txtData.setText(text);
+        readExcelFile();
     }
 
-    private String readTextFile() {
-        StringBuilder text = new StringBuilder();
+    private void readExcelFile() {
+        ArrayList<ArrayList<String>> cellList = new ArrayList<>();
+        try {
+            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                File dir = Utils.getDocumentsDirectory(this);
+                File file = new File(dir, getFileName());
 
-        String fileName = getFileName();
+                FileInputStream fis = new FileInputStream(file);
 
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            File dir = Utils.getDocumentsDirectory(this);
-            File file = new File(dir, fileName);
-            if (!file.exists()) {
-                return "File not found!";
-            }
+                Workbook workbook = new XSSFWorkbook(fis);
 
-            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    text.append(line).append("\n");
+                Sheet sheet = workbook.getSheetAt(0);
+
+                for (Row row: sheet) {
+                    if (row.getRowNum() == 0) continue;
+
+                    ArrayList<String> rowValue= new ArrayList<>();
+                    for (Cell cell: row) {
+                        switch (cell.getCellType()) {
+                            case STRING:
+                                rowValue.add(cell.getStringCellValue());
+                                break;
+                            case NUMERIC:
+                                if (DateUtil.isCellDateFormatted(cell)) {
+                                    rowValue.add(cell.getDateCellValue().toString());
+                                } else {
+                                    rowValue.add(String.valueOf(cell.getNumericCellValue()));
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    cellList.add(rowValue);
                 }
-                return text.toString();
-            } catch (IOException e) {
-                Log.e("ReadFile", "Error reading file", e);
-                return "Error reading file";
+
+                workbook.close();
+                fis.close();
             }
-        } else {
-            text.append("External storage not available.");
+        }catch(Exception exp){
+            exp.printStackTrace();
+            Toast.makeText(this, "Sorry User don't have view report", Toast.LENGTH_SHORT).show();
         }
-        return text.toString();
+
+
+        listView = findViewById(R.id.listView);
+        listView.setLayoutManager(new LinearLayoutManager(this));
+
+        ReportAdapter reportAdapter = new ReportAdapter(cellList);
+
+        listView.setAdapter(reportAdapter);
+
     }
 
 
@@ -87,7 +118,7 @@ public class ViewDataActivity extends AppCompatActivity {
             editor.apply();
         }
 
-        String fileName = String.format(Locale.getDefault(), "refillScan%s-%02d.txt", strDate, fileCounter);
+        String fileName = String.format(Locale.getDefault(), "refillScan%s-%02d.xlsx", strDate, fileCounter);
 
         return fileName;
     }

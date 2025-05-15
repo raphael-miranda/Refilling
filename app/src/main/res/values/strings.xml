@@ -3,8 +3,6 @@
 
     <string name="login" translatable="false">Login</string>
 
-    <string name="not_match">NOT MATCH!</string>
-    <string name="match">MATCH</string>
     <string name="settings">Settings</string>
     <string name="upload">Upload</string>
 
