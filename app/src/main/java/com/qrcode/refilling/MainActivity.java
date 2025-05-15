@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity{
 
     private RecyclerView listSmallLabels, listBigLabels;
     private AppCompatButton btnPlus1, btnPlus2;
-    private AppCompatButton btnUpload;
+    private AppCompatButton btnUpload, btnNext;
 
     LabelsAdapter smallListAdapter = new LabelsAdapter(new ArrayList<>());
     LabelsAdapter bigListAdapter = new LabelsAdapter(new ArrayList<>());
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity{
     private ActivityResultLauncher<String> storagePermissionLauncher;
     private ActivityResultLauncher<Intent> manageStorageLauncher;
 
-    private ColorStateList greenColors = new ColorStateList(
+    private final ColorStateList greenColors = new ColorStateList(
             new int[][]{
                     new int[]{android.R.attr.state_focused}, // Focused
                     new int[]{-android.R.attr.state_enabled}, // Disabled
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity{
             }
     );
 
-    private ColorStateList redColors = new ColorStateList(
+    private final ColorStateList redColors = new ColorStateList(
             new int[][]{
                     new int[]{android.R.attr.state_focused}, // Focused
                     new int[]{-android.R.attr.state_enabled}, // Disabled
@@ -143,6 +143,20 @@ public class MainActivity extends AppCompatActivity{
                     Color.RED
             }
     );
+
+    private final ColorStateList yellowColors = new ColorStateList(
+            new int[][]{
+                    new int[]{android.R.attr.state_focused}, // Focused
+                    new int[]{-android.R.attr.state_enabled}, // Disabled
+                    new int[]{} // Default
+            },
+            new int[]{
+                    Color.YELLOW,
+                    Color.YELLOW,
+                    Color.YELLOW
+            }
+    );
+    private ColorStateList normalColors;
 
     private final Handler clockHandler = new Handler();
     private final SimpleDateFormat sdfDate = new SimpleDateFormat("MM.dd.yyyy", Locale.getDefault());
@@ -200,6 +214,8 @@ public class MainActivity extends AppCompatActivity{
         txtDNr1 = findViewById(R.id.txtDNr1);
         txtQuantity1 = findViewById(R.id.txtQuantity1);
 
+        normalColors = txtDNr1.getBackgroundTintList();
+
         // Minus Label
         txtCtNrField2 = findViewById(R.id.txtCtNrField2);
         txtPartNrField2 = findViewById(R.id.txtPartNrField2);
@@ -244,7 +260,7 @@ public class MainActivity extends AppCompatActivity{
         btnUpload = findViewById(R.id.btnUpload);
         checkUploadAvailable();
 
-        AppCompatButton btnNew = findViewById(R.id.btnNew);
+        btnNext = findViewById(R.id.btnNext);
 
         btnPlus1.setOnClickListener(view -> {
             showAddLabelDialog(true);
@@ -266,14 +282,14 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        btnNew.setOnClickListener(view -> onNew());
+        btnNext.setOnClickListener(view -> saveAndNext());
 
         findViewById(R.id.btnClear).setOnClickListener(view -> reset());
 
         findViewById(R.id.btnSettings).setOnClickListener(view -> showSettingsDialog());
 
         findViewById(R.id.btnLogout).setOnClickListener(v -> {
-            finish();
+            logout();
         });
 
         checkManual();
@@ -345,6 +361,21 @@ public class MainActivity extends AppCompatActivity{
                         }
                     }).check();
         }
+    }
+
+
+    private void logout() {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Log out")
+                .setMessage("Are you sure to log out?")
+                .setNegativeButton("Yes", (dialogInterface, i) -> {
+                    finish();
+                    dialogInterface.dismiss();
+                })
+                .setPositiveButton("No", (dialogInterface, i) -> {
+                    dialogInterface.dismiss();
+                })
+                .show();
     }
 
     private void showSettingsDialog() {
@@ -498,7 +529,13 @@ public class MainActivity extends AppCompatActivity{
         SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         boolean isManual = sharedPreferences.getBoolean(IS_MANUAL, false);
         if (isManual) {
-            txtCtNr2.setShowSoftInputOnFocus(true);
+            txtCtNr1.setShowSoftInputOnFocus(true);
+            txtCtNr1.setEnabled(true);
+            txtPartNr1.setEnabled(true);
+            txtDNr1.setEnabled(true);
+            txtQuantity1.setEnabled(true);
+
+//            txtCtNr2.setShowSoftInputOnFocus(true);
             txtCtNr2.setEnabled(true);
             txtPartNr2.setEnabled(true);
             txtDNr2.setEnabled(true);
@@ -509,7 +546,12 @@ public class MainActivity extends AppCompatActivity{
             txtDNr3.setEnabled(true);
             txtQuantity3.setEnabled(true);
         } else {
-            txtCtNr2.setShowSoftInputOnFocus(false);
+            txtCtNr1.setShowSoftInputOnFocus(false);
+            txtCtNr1.setEnabled(true);
+            txtPartNr1.setEnabled(false);
+            txtDNr1.setEnabled(false);
+            txtQuantity1.setEnabled(false);
+
             txtCtNr2.setEnabled(true);
             txtPartNr2.setEnabled(false);
             txtDNr2.setEnabled(false);
@@ -557,19 +599,10 @@ public class MainActivity extends AppCompatActivity{
             // Handle all other keys in the default way
             return (keyCode == KeyEvent.KEYCODE_ENTER);
         });
-        txtCtNr1.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+        txtCtNr1.addTextChangedListener(new SimpleTextWatcher() {
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
+            public void afterTextChanged() {
                 String strCtNr = txtCtNr1.getText().toString();
                 int count = strCtNr.split(";").length;
 
@@ -582,7 +615,7 @@ public class MainActivity extends AppCompatActivity{
                 }
 
                 if (!txtCtNr1.getText().toString().isEmpty()) {
-                    isCartonExisting();
+//                    isCartonExisting();
                     compare();
                 } else {
                     txtCtNrField1.setErrorEnabled(false);
@@ -590,38 +623,26 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        txtPartNr1.addTextChangedListener(new TextWatcher() {
+        txtPartNr1.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
+            public void afterTextChanged() {
                 if (!(txtPartNr2.getText().toString().isEmpty())) {
                     compare();
                 }
             }
         });
 
-        txtQuantity1.addTextChangedListener(new TextWatcher() {
+        txtDNr1.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+            public void afterTextChanged() {
+                compare();
             }
+        });
+
+        txtQuantity1.addTextChangedListener(new SimpleTextWatcher() {
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
+            public void afterTextChanged() {
                 if (!(txtQuantity2.getText().toString().isEmpty())) {
                     compare();
                     txtCtNr2.requestFocus();
@@ -634,7 +655,6 @@ public class MainActivity extends AppCompatActivity{
         SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         boolean isManual = sharedPreferences.getBoolean(IS_MANUAL, false);
 
-        txtCtNr2.requestFocus();
         if (!isManual) {
             txtCtNr2.setShowSoftInputOnFocus(false);
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -651,19 +671,10 @@ public class MainActivity extends AppCompatActivity{
             // Handle all other keys in the default way
             return (keyCode == KeyEvent.KEYCODE_ENTER);
         });
-        txtCtNr2.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+        txtCtNr2.addTextChangedListener(new SimpleTextWatcher() {
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
+            public void afterTextChanged() {
                 String strCtNr = txtCtNr2.getText().toString();
                 int count = strCtNr.split(";").length;
 
@@ -676,7 +687,7 @@ public class MainActivity extends AppCompatActivity{
                 }
 
                 if (!txtCtNr2.getText().toString().isEmpty()) {
-                    isCartonExisting();
+//                    isCartonExisting();
                     compare();
                 } else {
                     txtCtNrField2.setErrorEnabled(false);
@@ -684,38 +695,23 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        txtPartNr2.addTextChangedListener(new TextWatcher() {
+        txtPartNr2.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (!(txtPartNr3.getText().toString().isEmpty())) {
-                    compare();
-                }
+            public void afterTextChanged() {
+                compare();
             }
         });
 
-        txtQuantity2.addTextChangedListener(new TextWatcher() {
+        txtDNr2.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+            public void afterTextChanged() {
+                compare();
             }
+        });
 
+        txtQuantity2.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
+            public void afterTextChanged() {
                 if (!(txtQuantity3.getText().toString().isEmpty())) {
                     compare();
                     txtCtNr3.requestFocus();
@@ -742,19 +738,9 @@ public class MainActivity extends AppCompatActivity{
                 return (keyCode == KeyEvent.KEYCODE_ENTER);
             }
         });
-        txtCtNr3.addTextChangedListener(new TextWatcher() {
+        txtCtNr3.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
+            public void afterTextChanged() {
                 String strCName = txtCtNr3.getText().toString();
                 int count = strCName.split(";").length;
 
@@ -771,38 +757,25 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        txtPartNr3.addTextChangedListener(new TextWatcher() {
+        txtPartNr3.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
+            public void afterTextChanged() {
                 if (!(txtPartNr3.getText().toString().isEmpty())) {
                     compare();
                 }
             }
         });
 
-        txtQuantity3.addTextChangedListener(new TextWatcher() {
+        txtDNr3.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+            public void afterTextChanged() {
+                compare();
             }
+        });
 
+        txtQuantity3.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
+            public void afterTextChanged() {
                 if (!(txtQuantity3.getText().toString().isEmpty())) {
                     compare();
                 }
@@ -892,23 +865,57 @@ public class MainActivity extends AppCompatActivity{
         return false;
     }
 
+    private abstract class SimpleTextWatcher implements TextWatcher {
+        @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+        @Override public void afterTextChanged(Editable s) {
+            afterTextChanged();
+        }
+        public abstract void afterTextChanged();
+    }
+
     private void compare() {
+        String strCtNr1 = txtCtNr1.getText().toString();
+        String strCtNr2 = txtCtNr2.getText().toString();
+        String strCtNr3 = txtCtNr3.getText().toString();
+
+        String strDNr1 = txtDNr1.getText().toString();
+        String strDNr2 = txtDNr2.getText().toString();
+        String strDNr3 = txtDNr3.getText().toString();
+
+        if (strCtNr1.equals(strCtNr2) && strCtNr1.equals(strCtNr3)) {
+            txtCtNr1.setBackgroundTintList(normalColors);
+            txtCtNr2.setBackgroundTintList(normalColors);
+            txtCtNr3.setBackgroundTintList(normalColors);
+        } else {
+            txtCtNr1.setBackgroundTintList(yellowColors);
+            txtCtNr2.setBackgroundTintList(yellowColors);
+            txtCtNr3.setBackgroundTintList(yellowColors);
+        }
+
+        if (strDNr1.equals(strDNr2) && strDNr1.equals(strDNr3)) {
+            txtDNr1.setBackgroundTintList(normalColors);
+            txtDNr2.setBackgroundTintList(normalColors);
+            txtDNr3.setBackgroundTintList(normalColors);
+        } else {
+            txtDNr1.setBackgroundTintList(yellowColors);
+            txtDNr2.setBackgroundTintList(yellowColors);
+            txtDNr3.setBackgroundTintList(yellowColors);
+        }
+
         String strPartNr1 = txtPartNr1.getText().toString();
         String strPartNr2 = txtPartNr2.getText().toString();
         String strPartNr3 = txtPartNr3.getText().toString();
-        String strQtty1 = txtQuantity1.getText().toString();
-        String strQtty2 = txtQuantity2.getText().toString();
-        String strQtty3 = txtQuantity3.getText().toString();
+        String strQuantity2 = txtQuantity2.getText().toString();
+        String strQuantity3 = txtQuantity3.getText().toString();
 
-        int quantity1 = 0, quantity2 = 0, quantity3 = 0;
-        if (!strQtty1.isEmpty()) {
-            quantity1 = Integer.parseInt(strQtty1);
+        int quantity2 = 0, quantity3 = 0;
+        if (!strQuantity2.isEmpty()) {
+            quantity2 = Integer.parseInt(strQuantity2);
         }
-        if (!strQtty2.isEmpty()) {
-            quantity2 = Integer.parseInt(strQtty2);
-        }
-        if (!strQtty3.isEmpty()) {
-            quantity3 = Integer.parseInt(strQtty3);
+        if (!strQuantity3.isEmpty()) {
+            quantity3 = Integer.parseInt(strQuantity3);
         }
 
         int result = 0;
@@ -933,7 +940,7 @@ public class MainActivity extends AppCompatActivity{
                 if (quantityHelperString.toString().isEmpty()) {
                     txtQuantityField2.setHelperText("");
                 } else {
-                    quantityHelperString.append(strQtty2.isEmpty() ? "0" : strQtty2);
+                    quantityHelperString.append(strQuantity2.isEmpty() ? "0" : strQuantity2);
                     quantityHelperString.append(" = ").append(quantity2);
                     txtQuantityField2.setHelperText(quantityHelperString.toString());
                 }
@@ -956,7 +963,7 @@ public class MainActivity extends AppCompatActivity{
                 if (quantityHelperString.toString().isEmpty()) {
                     txtQuantityField3.setHelperText("");
                 } else {
-                    quantityHelperString.append(strQtty3.isEmpty() ? "0" : strQtty3);
+                    quantityHelperString.append(strQuantity3.isEmpty() ? "0" : strQuantity3);
                     quantityHelperString.append(" = ").append(quantity3);
                     txtQuantityField3.setHelperText(quantityHelperString.toString());
                 }
@@ -971,24 +978,41 @@ public class MainActivity extends AppCompatActivity{
             txtPartNr3.setBackgroundTintList(redColors);
         }
 
-        if (quantity2 != 0 && (quantity2 == quantity3)) {
-            result += 1;
-            txtQuantity2.setBackgroundTintList(greenColors);
-            txtQuantity3.setBackgroundTintList(greenColors);
+        if (quantity2 != 0) {
+            if (quantity2 == quantity3) {
+                result += 1;
+                txtQuantity2.setBackgroundTintList(greenColors);
+                txtQuantity3.setBackgroundTintList(greenColors);
+            } else if (quantity2 > quantity3){
+                txtQuantity2.setBackgroundTintList(yellowColors);
+                txtQuantity3.setBackgroundTintList(yellowColors);
+                final int remainedQuantity = quantity2 - quantity3;
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle("Qtty are not same")
+                        .setMessage("Carton will remain “minus”?")
+                        .setNegativeButton("Yes", (dialogInterface, i) -> {
+                            addRemained(remainedQuantity);
+                            dialogInterface.dismiss();
+                        })
+                        .setPositiveButton("No", (dialogInterface, i) -> {
+                            dialogInterface.dismiss();
+                        })
+                        .show();
+            } else {
+                txtQuantity2.setBackgroundTintList(yellowColors);
+                txtQuantity3.setBackgroundTintList(yellowColors);
+                showInformationDialog("Qtty are not same", "Good Qtty cannot be more than Minus Qtty.");
+            }
         } else {
             txtQuantity2.setBackgroundTintList(redColors);
             txtQuantity3.setBackgroundTintList(redColors);
         }
 
+
         if (result == 2) {
-            if (!isCartonExisting()) {
-                saveAndNext();
-            }
-
-            btnPlus1.setEnabled(false);
-            btnPlus2.setEnabled(false);
+            btnNext.setEnabled(true);
         } else {
-
+            btnNext.setEnabled(false);
             if (!txtCtNr2.getText().toString().isEmpty()) {
                 btnPlus1.setEnabled(true);
             }
@@ -996,6 +1020,17 @@ public class MainActivity extends AppCompatActivity{
                 btnPlus2.setEnabled(true);
             }
         }
+    }
+
+    private void addRemained(int remainedQuantity) {
+        HashMap<String, String> bigLabelData = new HashMap<>();
+        bigLabelData.put(Utils.CARTON_NR, txtCtNr3.getText().toString());
+        bigLabelData.put(Utils.PART_NR, txtPartNr3.getText().toString());
+        bigLabelData.put(Utils.D_NR, txtDNr3.getText().toString());
+        bigLabelData.put(Utils.QUANTITY, txtQuantity3.getText().toString());
+        bigListAdapter.addItem(bigLabelData);
+
+        txtQuantity3.setText(String.valueOf(remainedQuantity));
     }
 
     // For add label dialog
@@ -1142,27 +1177,22 @@ public class MainActivity extends AppCompatActivity{
         int correctResults = 0;
 
         if (txtDialogCartonNumber.getText().toString().isEmpty()) {
-            if (isLeft) {
-                dlgCartonNumberField.setError("Empty Ct-Nr");
-            } else {
-                dlgCartonNumberField.setError("Empty C-Name");
-            }
-
+            dlgCartonNumberField.setError("Empty Ct-Nr");
             txtDialogCartonNumber.setBackgroundTintList(redColors);
         } else {
-            if (isLeft && isDialogCartonExisting(txtDialogCartonNumber.getText().toString(), isLeft)) {
-                dlgCartonNumberField.setError("DOUBLE Ct-Nr");
-                txtDialogCartonNumber.setBackgroundTintList(redColors);
-            } else {
+//            if (isLeft && isDialogCartonExisting(txtDialogCartonNumber.getText().toString(), isLeft)) {
+//                dlgCartonNumberField.setError("DOUBLE Ct-Nr");
+//                txtDialogCartonNumber.setBackgroundTintList(redColors);
+//            } else {
                 correctResults += 1;
                 dlgCartonNumberField.setErrorEnabled(false);
                 txtDialogCartonNumber.setBackgroundTintList(greenColors);
-            }
+//            }
         }
 
-        String strOldPartNr = txtPartNr1.getText().toString();
+        String strOldPartNr = txtPartNr2.getText().toString();
         if (!isLeft) {
-            strOldPartNr = txtPartNr2.getText().toString();
+            strOldPartNr = txtPartNr3.getText().toString();
         }
 
         if (!txtDialogPartNr.getText().toString().equals(strOldPartNr)) {
@@ -1211,19 +1241,6 @@ public class MainActivity extends AppCompatActivity{
         public void afterTextChanged(Editable editable) {
             checkAddLabelValidation(isLeft);
         }
-    }
-
-    private void onNew() {
-        new MaterialAlertDialogBuilder(this)
-                .setTitle("New")
-                .setMessage("Are you sure to create new one?")
-                .setNegativeButton("Yes", (dialogInterface, i) -> {
-                    upload();
-
-                    dialogInterface.dismiss();
-                })
-                .setPositiveButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
-                .show();
     }
 
     private void saveAndNext() {

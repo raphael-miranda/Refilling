@@ -40,15 +40,16 @@
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnUpload"
-                android:layout_width="120dp"
+                android:id="@+id/btnLogout"
+                android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
                 android:layout_marginStart="10dp"
-                android:text="@string/upload"
+                android:text="@string/logout"
                 android:textSize="18sp"
                 android:textAllCaps="false"
-                android:enabled="false"/>
+                android:drawableStart="@drawable/logout"
+                android:drawablePadding="4dp"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -544,7 +545,7 @@
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnPlus1"
-                    android:layout_width="50dp"
+                    android:layout_width="60dp"
                     android:layout_height="50dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="6dp"
@@ -569,7 +570,7 @@
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnPlus2"
-                    android:layout_width="50dp"
+                    android:layout_width="60dp"
                     android:layout_height="50dp"
                     android:layout_marginStart="10dp"
                     android:text="+"
@@ -582,58 +583,52 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp">
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:gravity="center">
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnLogout"
+                android:id="@+id/btnUpload"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
-                android:text="@string/logout"
-                android:textSize="20sp"
-                android:textAllCaps="false" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnClear"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight="1"
-                android:layout_marginStart="20dp"
-                android:text="@string/clear"
-                android:textSize="20sp"
-                android:textAllCaps="true"
-                android:focusable="true"
-                android:focusableInTouchMode="true"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            style="?android:attr/buttonBarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp">
+                android:enabled="false"
+                android:text="@string/upload"
+                android:textAllCaps="false"
+                android:textSize="16sp" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnViewData"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
+                android:layout_marginStart="4dp"
                 android:layout_weight="1"
                 android:text="@string/view_data"
-                android:textSize="20sp"
-                android:textAllCaps="false" />
+                android:textAllCaps="false"
+                android:textSize="16sp" />
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnNew"
+                android:id="@+id/btnClear"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:text="@string/clear"
+                android:textAllCaps="false"
+                android:textSize="16sp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnNext"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
-                android:layout_marginStart="20dp"
-                android:text="@string/new_button"
-                android:textSize="20sp"
-                android:textAllCaps="false" />
+                android:layout_marginStart="4dp"
+                android:text="@string/next"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:enabled="false"/>
 
         </LinearLayout>
 
