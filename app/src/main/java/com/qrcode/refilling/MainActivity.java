@@ -978,7 +978,7 @@ public class MainActivity extends AppCompatActivity{
             txtPartNr3.setBackgroundTintList(redColors);
         }
 
-        if (quantity2 != 0) {
+        if (quantity2 != 0 && quantity3 != 0) {
             if (quantity2 == quantity3) {
                 result += 1;
                 txtQuantity2.setBackgroundTintList(greenColors);
@@ -1065,7 +1065,7 @@ public class MainActivity extends AppCompatActivity{
         txtDialogQuantity = dialogView.findViewById(R.id.txtQuantity);
 
         btnDialogAdd = dialogView.findViewById(R.id.btnAdd);
-        MaterialButton btnClear = dialogView.findViewById(R.id.btnClear);
+        MaterialButton btnDialogClear = dialogView.findViewById(R.id.btnClear);
         MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancel);
 
         if (isLeft) {
@@ -1161,7 +1161,7 @@ public class MainActivity extends AppCompatActivity{
             dialog.dismiss();
         });
 
-        btnClear.setOnClickListener(view -> {
+        btnDialogClear.setOnClickListener(view -> {
             txtDialogCartonNumber.setText("");
             txtDialogPartNr.setText("");
             txtDialogDNr.setText("");
@@ -1356,46 +1356,40 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void reset() {
-//        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                // Code to run after delay
-                txtCtNr1.setText("");
-                txtPartNr1.setText("");
-                txtDNr1.setText("");
-                txtQuantity1.setText("");
-                txtQuantityField1.setHelperText("");
 
-                txtCtNr2.setText("");
-                txtPartNr2.setText("");
-                txtDNr2.setText("");
-                txtQuantity2.setText("");
-                txtQuantityField2.setHelperText("");
+        txtQuantity2.setText("");
+        txtQuantity3.setText("");
 
-                txtCtNr3.setText("");
-                txtPartNr3.setText("");
-                txtDNr3.setText("");
-                txtQuantity3.setText("");
-                txtQuantityField3.setHelperText("");
+        txtCtNr1.setText("");
+        txtPartNr1.setText("");
+        txtDNr1.setText("");
+        txtQuantity1.setText("");
+        txtQuantityField1.setHelperText("");
 
-                smallListAdapter.clear();
-                bigListAdapter.clear();
+        txtCtNr2.setText("");
+        txtPartNr2.setText("");
+        txtDNr2.setText("");
+        txtQuantityField2.setHelperText("");
 
-                txtPartNr1.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
-                txtPartNr2.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
-                txtPartNr3.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
-                txtQuantity1.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
-                txtQuantity2.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
-                txtQuantity3.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
+        txtCtNr3.setText("");
+        txtPartNr3.setText("");
+        txtDNr3.setText("");
+        txtQuantityField3.setHelperText("");
 
-                btnPlus1.setEnabled(false);
-                btnPlus2.setEnabled(false);
+        smallListAdapter.clear();
+        bigListAdapter.clear();
 
-                txtCtNr1.requestFocus();
-//            }
-//        }, 1000);
+        txtPartNr1.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
+        txtPartNr2.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
+        txtPartNr3.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
+        txtQuantity1.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
+        txtQuantity2.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
+        txtQuantity3.setBackgroundTintList(txtCtNr2.getBackgroundTintList());
 
+        btnPlus1.setEnabled(false);
+        btnPlus2.setEnabled(false);
 
+        txtCtNr1.requestFocus();
     }
 
     private void upload() {
