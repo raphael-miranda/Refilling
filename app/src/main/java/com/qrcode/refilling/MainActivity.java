@@ -69,11 +69,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -103,8 +101,10 @@ public class MainActivity extends AppCompatActivity{
 
     private String mUserName = "";
 
+
     private TextView txtScannedNumber;
     private TextView txtCurrentDate, txtCurrentTime;
+    private TextView txtCartonCount, txtMinusCount, txtGoodCount;
 
     private TextInputLayout txtCtNrField1, txtPartNrField1, txtQuantityField1;
     private TextInputLayout txtCtNrField2, txtPartNrField2, txtQuantityField2;
@@ -114,11 +114,15 @@ public class MainActivity extends AppCompatActivity{
     private TextInputEditText txtCtNr2, txtPartNr2, txtDNr2, txtQuantity2;
     private TextInputEditText txtCtNr3, txtPartNr3, txtDNr3, txtQuantity3;
 
+    private TextView txtTotalQuantity2, txtTotalQuantity3;
+
     private RecyclerView listSmallLabels, listBigLabels;
     private AppCompatButton btnPlus1, btnPlus2;
     private AppCompatButton btnUpload, btnNext;
 
-    private boolean isReseting = false;
+    private boolean isResetting = false;
+
+    private int cartonCount = 0, minusCount = 0, goodCount = 0;
 
     LabelsAdapter smallListAdapter = new LabelsAdapter(new ArrayList<>());
     LabelsAdapter bigListAdapter = new LabelsAdapter(new ArrayList<>());
@@ -163,6 +167,19 @@ public class MainActivity extends AppCompatActivity{
                     Color.YELLOW
             }
     );
+
+    private final ColorStateList transparentColors = new ColorStateList(
+            new int[][]{
+                    new int[]{android.R.attr.state_focused}, // Focused
+                    new int[]{-android.R.attr.state_enabled}, // Disabled
+                    new int[]{} // Default
+            },
+            new int[]{
+                    Color.TRANSPARENT,
+                    Color.TRANSPARENT,
+                    Color.TRANSPARENT
+            }
+    );
     private ColorStateList normalColors;
 
     private final Handler clockHandler = new Handler();
@@ -199,6 +216,10 @@ public class MainActivity extends AppCompatActivity{
         txtCurrentTime = findViewById(R.id.txtCurrentTime);
         clockHandler.post(updateTime);
 
+        txtCartonCount = findViewById(R.id.txtCartonCount);
+        txtMinusCount = findViewById(R.id.txtMinusCount);
+        txtGoodCount = findViewById(R.id.txtGoodCount);
+
         TextView txtVersion = findViewById(R.id.txtVersion);
         String version = "Unknown";
         try {
@@ -231,6 +252,7 @@ public class MainActivity extends AppCompatActivity{
         txtPartNr2 = findViewById(R.id.txtPartNr2);
         txtDNr2 = findViewById(R.id.txtDNr2);
         txtQuantity2 = findViewById(R.id.txtQuantity2);
+        txtTotalQuantity2 = findViewById(R.id.txtTotalQuantity2);
 
         // Good Label
         txtCtNrField3 = findViewById(R.id.txtCtNrField3);
@@ -240,6 +262,7 @@ public class MainActivity extends AppCompatActivity{
         txtPartNr3 = findViewById(R.id.txtPartNr3);
         txtDNr3 = findViewById(R.id.txtDNr3);
         txtQuantity3 = findViewById(R.id.txtQuantity3);
+        txtTotalQuantity3 = findViewById(R.id.txtTotalQuantity3);
 
         listSmallLabels = findViewById(R.id.smallLabelListView);
         listBigLabels = findViewById(R.id.bigLabelListView);
@@ -525,7 +548,6 @@ public class MainActivity extends AppCompatActivity{
             txtDNr1.setEnabled(true);
             txtQuantity1.setEnabled(true);
 
-//            txtCtNr2.setShowSoftInputOnFocus(true);
             txtCtNr2.setEnabled(true);
             txtPartNr2.setEnabled(true);
             txtDNr2.setEnabled(true);
@@ -604,7 +626,6 @@ public class MainActivity extends AppCompatActivity{
                 }
 
                 if (!txtCtNr1.getText().toString().isEmpty()) {
-//                    isCartonExisting();
                     compare();
                 } else {
                     txtCtNrField1.setErrorEnabled(false);
@@ -641,6 +662,9 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void initSecondScan() {
+        txtTotalQuantity2.setText("");
+        txtTotalQuantity2.setVisibility(View.GONE);
+
         SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         boolean isManual = sharedPreferences.getBoolean(IS_MANUAL, false);
 
@@ -676,7 +700,6 @@ public class MainActivity extends AppCompatActivity{
                 }
 
                 if (!txtCtNr2.getText().toString().isEmpty()) {
-//                    isCartonExisting();
                     compare();
                 } else {
                     txtCtNrField2.setErrorEnabled(false);
@@ -710,6 +733,9 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void initThirdScan() {
+        txtTotalQuantity3.setText("");
+        txtTotalQuantity3.setVisibility(View.GONE);
+
         txtCtNr3.setFocusable(true);
 
         txtCtNr3.post(() -> txtCtNr3.setSelection(txtCtNr3.getText().length()));
@@ -772,94 +798,6 @@ public class MainActivity extends AppCompatActivity{
         });
     }
 
-    private boolean isCartonExisting() {
-        if (txtCtNr2.getText().toString().isEmpty()) {
-            txtCtNrField2.setErrorEnabled(false);
-            txtCtNrField3.setErrorEnabled(false);
-            return false;
-        }
-
-        String strCtNr = String.format(Locale.getDefault(), "; %-12s ;", txtCtNr2.getText().toString());
-
-        String fileName = getFileName();
-
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-//            File dir = Utils.getDocumentsDirectory(this);
-//            File file = new File(dir, fileName);
-
-            File file = new File(Utils.getMainFilePath(getApplicationContext()) + "/" + Constants.FolderName + "/" + fileName);
-
-            if (!file.exists()) {
-                txtCtNrField2.setErrorEnabled(false);
-                txtCtNrField3.setErrorEnabled(false);
-                return false;
-            }
-
-            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    if (line.contains(strCtNr)) {
-                        txtCtNrField2.setError("DOUBLE CT-Nr");
-                        btnPlus1.setEnabled(false);
-                        return true;
-                    } else {
-                        txtCtNrField2.setErrorEnabled(false);
-                    }
-
-                    txtCtNrField3.setErrorEnabled(false);
-
-                }
-                return false;
-            } catch (IOException e) {
-                Log.e("ReadFile", "Error reading file", e);
-                return false;
-            }
-        }
-        return false;
-    }
-
-    private boolean isDialogCartonExisting(String cartonNr, boolean isLeft) {
-        String oldCartonNr = "";
-        if (isLeft) {
-            oldCartonNr = txtCtNr2.getText().toString();
-        } else {
-            oldCartonNr = txtCtNr3.getText().toString();
-        }
-
-        if (cartonNr.equals(oldCartonNr)) {
-            return true;
-        }
-
-        String strCartonNr = String.format(Locale.getDefault(), "; %-12s ;", cartonNr);
-
-        String fileName = getFileName();
-
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-//            File dir = Utils.getDocumentsDirectory(this);
-//            File file = new File(dir, fileName);
-
-            File file = new File(Utils.getMainFilePath(getApplicationContext()) + "/" + Constants.FolderName + "/" + fileName);
-
-            if (!file.exists()) {
-                return false;
-            }
-
-            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    if (line.contains(strCartonNr) && !strCartonNr.isEmpty()) {
-                        return true;
-                    }
-                }
-                return false;
-            } catch (IOException e) {
-                Log.e("ReadFile", "Error reading file", e);
-                return false;
-            }
-        }
-        return false;
-    }
-
     private abstract class SimpleTextWatcher implements TextWatcher {
         @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
         @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -871,7 +809,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void compare() {
-        if (isReseting) return;
+        if (isResetting) return;
 
         String strCtNr1 = txtCtNr1.getText().toString();
         String strCtNr2 = txtCtNr2.getText().toString();
@@ -880,6 +818,16 @@ public class MainActivity extends AppCompatActivity{
         String strDNr1 = txtDNr1.getText().toString();
         String strDNr2 = txtDNr2.getText().toString();
         String strDNr3 = txtDNr3.getText().toString();
+
+        if (!strCtNr1.isEmpty()) {
+            txtCartonCount.setText("1");
+        }
+        if (!strCtNr2.isEmpty()) {
+            txtMinusCount.setText(String.valueOf(smallListAdapter.getItemCount() + 1));
+        }
+        if (!strCtNr3.isEmpty()) {
+            txtGoodCount.setText(String.valueOf(bigListAdapter.getItemCount() + 1));
+        }
 
         if (strCtNr1.equals(strCtNr2) && strCtNr1.equals(strCtNr3)) {
             txtCtNr1.setBackgroundTintList(normalColors);
@@ -940,9 +888,13 @@ public class MainActivity extends AppCompatActivity{
                     quantityHelperString.append(strQuantity2.isEmpty() ? "0" : strQuantity2);
                     quantityHelperString.append(" = ").append(quantity2);
                     txtQuantityField2.setHelperText(quantityHelperString.toString());
+
+                    txtTotalQuantity2.setVisibility(View.VISIBLE);
+                    txtTotalQuantity2.setText(String.valueOf(quantity2));
                 }
             } else {
                 txtQuantityField2.setHelperText("");
+                txtTotalQuantity2.setVisibility(View.GONE);
             }
 
             if (bigListAdapter.getItemCount() > 0) {
@@ -963,11 +915,14 @@ public class MainActivity extends AppCompatActivity{
                     quantityHelperString.append(strQuantity3.isEmpty() ? "0" : strQuantity3);
                     quantityHelperString.append(" = ").append(quantity3);
                     txtQuantityField3.setHelperText(quantityHelperString.toString());
-                }
 
+                    txtTotalQuantity3.setVisibility(View.VISIBLE);
+                    txtTotalQuantity3.setText(String.valueOf(quantity3));
+                }
 
             } else {
                 txtQuantityField3.setHelperText("");
+                txtTotalQuantity3.setVisibility(View.GONE);
             }
         } else {
             txtPartNr1.setBackgroundTintList(redColors);
@@ -980,27 +935,39 @@ public class MainActivity extends AppCompatActivity{
                 result += 1;
                 txtQuantity2.setBackgroundTintList(greenColors);
                 txtQuantity3.setBackgroundTintList(greenColors);
+
+                txtTotalQuantity2.setBackgroundColor(Color.GREEN);
+                txtTotalQuantity3.setBackgroundColor(Color.GREEN);
+
             } else if (quantity2 > quantity3){
                 result += 1;
                 txtQuantity2.setBackgroundTintList(yellowColors);
                 txtQuantity3.setBackgroundTintList(yellowColors);
+                txtTotalQuantity2.setBackgroundColor(Color.YELLOW);
+                txtTotalQuantity3.setBackgroundColor(Color.YELLOW);
+
                 final int remainedQuantity = quantity2 - quantity3;
                 new MaterialAlertDialogBuilder(this)
                         .setTitle("Qtty are not same")
                         .setMessage("Carton will remain “minus”?")
                         .setNegativeButton("Ok", (dialogInterface, i) -> {
-//                            addRemained(remainedQuantity);
                             dialogInterface.dismiss();
                         })
                         .show();
             } else {
                 txtQuantity2.setBackgroundTintList(redColors);
                 txtQuantity3.setBackgroundTintList(redColors);
+                txtTotalQuantity2.setBackgroundColor(Color.RED);
+                txtTotalQuantity3.setBackgroundColor(Color.RED);
+
                 showInformationDialog("Qtty are not same", "Good Qtty cannot be more than Minus Qtty. Please add Minus-Qtty.");
             }
         } else {
             txtQuantity2.setBackgroundTintList(redColors);
             txtQuantity3.setBackgroundTintList(redColors);
+            txtTotalQuantity2.setBackgroundColor(Color.RED);
+            txtTotalQuantity3.setBackgroundColor(Color.RED);
+
         }
 
 
@@ -1017,16 +984,7 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    private void addRemained(int remainedQuantity) {
-        HashMap<String, String> bigLabelData = new HashMap<>();
-        bigLabelData.put(Utils.CARTON_NR, txtCtNr3.getText().toString());
-        bigLabelData.put(Utils.PART_NR, txtPartNr3.getText().toString());
-        bigLabelData.put(Utils.D_NR, txtDNr3.getText().toString());
-        bigLabelData.put(Utils.QUANTITY, txtQuantity3.getText().toString());
-        bigListAdapter.addItem(bigLabelData);
 
-        txtQuantity3.setText(String.valueOf(remainedQuantity));
-    }
 
     // For add label dialog
     TextInputLayout dlgCartonNumberField;
@@ -1135,10 +1093,10 @@ public class MainActivity extends AppCompatActivity{
                 smallLabelData.put(Utils.QUANTITY, txtQuantity2.getText().toString());
                 smallListAdapter.addItem(smallLabelData);
 
+                txtQuantity2.setText(quantity);
                 txtCtNr2.setText(cartonName);
                 txtPartNr2.setText(partNr);
                 txtDNr2.setText(dNr);
-                txtQuantity2.setText(quantity);
             } else {
                 HashMap<String, String> bigLabelData = new HashMap<>();
                 bigLabelData.put(Utils.CARTON_NR, txtCtNr3.getText().toString());
@@ -1147,10 +1105,10 @@ public class MainActivity extends AppCompatActivity{
                 bigLabelData.put(Utils.QUANTITY, txtQuantity3.getText().toString());
                 bigListAdapter.addItem(bigLabelData);
 
+                txtQuantity3.setText(quantity);
                 txtCtNr3.setText(cartonName);
                 txtPartNr3.setText(partNr);
                 txtDNr3.setText(dNr);
-                txtQuantity3.setText(quantity);
             }
 
             dialog.dismiss();
@@ -1175,14 +1133,9 @@ public class MainActivity extends AppCompatActivity{
             dlgCartonNumberField.setError("Empty Ct-Nr");
             txtDialogCartonNumber.setBackgroundTintList(redColors);
         } else {
-//            if (isLeft && isDialogCartonExisting(txtDialogCartonNumber.getText().toString(), isLeft)) {
-//                dlgCartonNumberField.setError("DOUBLE Ct-Nr");
-//                txtDialogCartonNumber.setBackgroundTintList(redColors);
-//            } else {
-                correctResults += 1;
-                dlgCartonNumberField.setErrorEnabled(false);
-                txtDialogCartonNumber.setBackgroundTintList(greenColors);
-//            }
+            correctResults += 1;
+            dlgCartonNumberField.setErrorEnabled(false);
+            txtDialogCartonNumber.setBackgroundTintList(greenColors);
         }
 
         String strOldPartNr = txtPartNr2.getText().toString();
@@ -1335,12 +1288,9 @@ public class MainActivity extends AppCompatActivity{
         try {
             String fileName = getFileName();
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-//                File dir = Utils.getDocumentsDirectory(this);
 
                 File file = new File(Utils.getMainFilePath(getApplicationContext()) + "/" + Constants.FolderName + "/" + fileName);
 
-
-//                File file = new File(dir, fileName);
                 if (!file.exists()) {
                     createExcelFile(file);
                 }
@@ -1411,10 +1361,17 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void reset() {
-        isReseting = true;
+        isResetting = true;
+
+        txtCartonCount.setText("0");
+        txtMinusCount.setText("0");
+        txtGoodCount.setText("0");
 
         txtQuantity2.setText("");
         txtQuantity3.setText("");
+
+        txtTotalQuantity2.setText("");
+        txtTotalQuantity3.setText("");
 
         txtCtNr1.setText("");
         txtPartNr1.setText("");
@@ -1448,11 +1405,14 @@ public class MainActivity extends AppCompatActivity{
         txtQuantity2.setBackgroundTintList(normalColors);
         txtQuantity3.setBackgroundTintList(normalColors);
 
+        txtTotalQuantity2.setVisibility(View.GONE);
+        txtTotalQuantity3.setVisibility(View.GONE);
+
         btnPlus1.setEnabled(false);
         btnPlus2.setEnabled(false);
 
         txtCtNr1.requestFocus();
-        isReseting = false;
+        isResetting = false;
     }
 
     private void upload() {
