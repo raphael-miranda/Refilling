@@ -52,8 +52,10 @@ public class ViewDataActivity extends AppCompatActivity {
         ArrayList<ArrayList<String>> cellList = new ArrayList<>();
         try {
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                File dir = Utils.getDocumentsDirectory(this);
-                File file = new File(dir, getFileName());
+//                File dir = Utils.getDocumentsDirectory(this);
+//                File file = new File(dir, getFileName());
+
+                File file = new File(Utils.getMainFilePath(getApplicationContext()) + "/refilling/" + getFileName());
 
                 FileInputStream fis = new FileInputStream(file);
 

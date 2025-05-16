@@ -124,7 +124,6 @@ public class MainActivity extends AppCompatActivity{
     LabelsAdapter bigListAdapter = new LabelsAdapter(new ArrayList<>());
 
     private ActivityResultLauncher<String> storagePermissionLauncher;
-    private ActivityResultLauncher<Intent> manageStorageLauncher;
 
     private final ColorStateList greenColors = new ColorStateList(
             new int[][]{
@@ -315,18 +314,6 @@ public class MainActivity extends AppCompatActivity{
                     }
                 });
 
-        manageStorageLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        if (Environment.isExternalStorageManager()) {
-                            Toast.makeText(this, "Storage Permission Allowed", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(this, "Manage Storage Permission Denied", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
         checkPermissions();
 
         // prevent going to login screen
@@ -344,11 +331,6 @@ public class MainActivity extends AppCompatActivity{
                 storagePermissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES);
             }
 
-//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//            if (!android.os.Environment.isExternalStorageManager()) {
-//                Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + getPackageName()));
-//                manageStorageLauncher.launch(intent);
-//            }
         } else {
             Dexter.withContext(getApplicationContext())
                     .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -576,8 +558,7 @@ public class MainActivity extends AppCompatActivity{
     private void checkUploadAvailable() {
         String fileName = getFileName();
 
-        File dir = Utils.getDocumentsDirectory(this);
-        File file = new File(dir, fileName);
+        File file = new File(Utils.getMainFilePath(getApplicationContext()) + "/" + Constants.FolderName + "/" + fileName);
 
         if (file.exists()) {
             btnUpload.setEnabled(true);
@@ -803,8 +784,11 @@ public class MainActivity extends AppCompatActivity{
         String fileName = getFileName();
 
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            File dir = Utils.getDocumentsDirectory(this);
-            File file = new File(dir, fileName);
+//            File dir = Utils.getDocumentsDirectory(this);
+//            File file = new File(dir, fileName);
+
+            File file = new File(Utils.getMainFilePath(getApplicationContext()) + "/" + Constants.FolderName + "/" + fileName);
+
             if (!file.exists()) {
                 txtCtNrField2.setErrorEnabled(false);
                 txtCtNrField3.setErrorEnabled(false);
@@ -851,8 +835,11 @@ public class MainActivity extends AppCompatActivity{
         String fileName = getFileName();
 
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            File dir = Utils.getDocumentsDirectory(this);
-            File file = new File(dir, fileName);
+//            File dir = Utils.getDocumentsDirectory(this);
+//            File file = new File(dir, fileName);
+
+            File file = new File(Utils.getMainFilePath(getApplicationContext()) + "/" + Constants.FolderName + "/" + fileName);
+
             if (!file.exists()) {
                 return false;
             }
@@ -994,24 +981,22 @@ public class MainActivity extends AppCompatActivity{
                 txtQuantity2.setBackgroundTintList(greenColors);
                 txtQuantity3.setBackgroundTintList(greenColors);
             } else if (quantity2 > quantity3){
+                result += 1;
                 txtQuantity2.setBackgroundTintList(yellowColors);
                 txtQuantity3.setBackgroundTintList(yellowColors);
                 final int remainedQuantity = quantity2 - quantity3;
                 new MaterialAlertDialogBuilder(this)
                         .setTitle("Qtty are not same")
                         .setMessage("Carton will remain “minus”?")
-                        .setNegativeButton("Yes", (dialogInterface, i) -> {
-                            addRemained(remainedQuantity);
-                            dialogInterface.dismiss();
-                        })
-                        .setPositiveButton("No", (dialogInterface, i) -> {
+                        .setNegativeButton("Ok", (dialogInterface, i) -> {
+//                            addRemained(remainedQuantity);
                             dialogInterface.dismiss();
                         })
                         .show();
             } else {
-                txtQuantity2.setBackgroundTintList(yellowColors);
-                txtQuantity3.setBackgroundTintList(yellowColors);
-                showInformationDialog("Qtty are not same", "Good Qtty cannot be more than Minus Qtty.");
+                txtQuantity2.setBackgroundTintList(redColors);
+                txtQuantity3.setBackgroundTintList(redColors);
+                showInformationDialog("Qtty are not same", "Good Qtty cannot be more than Minus Qtty. Please add Minus-Qtty.");
             }
         } else {
             txtQuantity2.setBackgroundTintList(redColors);
@@ -1287,7 +1272,7 @@ public class MainActivity extends AppCompatActivity{
 
         ArrayList<List<String>> result = new ArrayList<>();
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         String currentTime = simpleDateFormat.format(new Date());
 
         String scanLabel = String.format(Locale.getDefault(), "Scan%03d", scannedNumber + 1);
@@ -1350,8 +1335,12 @@ public class MainActivity extends AppCompatActivity{
         try {
             String fileName = getFileName();
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                File dir = Utils.getDocumentsDirectory(this);
-                File file = new File(dir, fileName);
+//                File dir = Utils.getDocumentsDirectory(this);
+
+                File file = new File(Utils.getMainFilePath(getApplicationContext()) + "/" + Constants.FolderName + "/" + fileName);
+
+
+//                File file = new File(dir, fileName);
                 if (!file.exists()) {
                     createExcelFile(file);
                 }
@@ -1536,8 +1525,8 @@ public class MainActivity extends AppCompatActivity{
             try {
                 String fileName = getFileName();
 
-                File dir = Utils.getDocumentsDirectory(this);
-                File file = new File(dir, fileName);
+                File file = new File(Utils.getMainFilePath(getApplicationContext()) + "/" + Constants.FolderName + "/" + fileName);
+
 
                 if (!file.exists()) {
                     errorMessage = "There is no file to upload!";
@@ -1608,8 +1597,7 @@ public class MainActivity extends AppCompatActivity{
             try {
                 String fileName = getFileName();
 
-                File dir = Utils.getDocumentsDirectory(this);
-                File file = new File(dir, fileName);
+                File file = new File(Utils.getMainFilePath(getApplicationContext()) + "/logger/" + fileName);
 
                 if (!file.exists()) {
                     errorMessage = "There is no file to upload!";
@@ -1670,8 +1658,7 @@ public class MainActivity extends AppCompatActivity{
                     DiskShare share = (DiskShare) session.connectShare(shareName);
 
                     String fileName = getFileName();
-                    File dir = Utils.getDocumentsDirectory(this);
-                    File file = new File(dir, fileName);
+                    File file = new File(Utils.getMainFilePath(getApplicationContext()) + "/" + Constants.FolderName + "/" + fileName);
 
                     FileInputStream fis = new FileInputStream(file);
                     OutputStream os = share.openFile(fileName,
@@ -1783,12 +1770,14 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void removeCurrentFile() {
-        File dir = Utils.getDocumentsDirectory(this);
+
+        File dir = new File(Utils.getMainFilePath(getApplicationContext()) + "/" + Constants.FolderName);
+
         if (dir.exists() && dir.isDirectory()) {
             File[] files = dir.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    if (file.isFile() && file.getName().startsWith("SCAN") && file.getName().endsWith(".xlsx")) {
+                    if (file.isFile() && file.getName().startsWith("refillScan") && file.getName().endsWith(".xlsx")) {
                         boolean deleted = file.delete();
                         Log.d("FileDelete", file.getName() + (deleted ? " deleted." : " failed to delete."));
                     }
