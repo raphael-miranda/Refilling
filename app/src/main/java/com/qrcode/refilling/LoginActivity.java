@@ -11,7 +11,6 @@ import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -22,8 +21,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
-import com.journeyapps.barcodescanner.CaptureActivity;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -47,8 +44,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText txtUserName;
     private EditText txtPassword;
-
-    private static final int REQUEST_CODE_QR_SCAN = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,17 +80,15 @@ public class LoginActivity extends AppCompatActivity {
                 if (!finalText.isEmpty()) {
 
                     String[] credentials = finalText.split(";");
-                    if (credentials.length >= 3) {
-                        callLogin(finalText.trim());
-                    }
+                    if (credentials.length >= 2) {
+                        String username = credentials[0];  // Get the username
+                        String password = credentials[1];  // Get the password
 
+                        txtUserName.setText(username);
+                        txtPassword.setText(password);
+                    }
                 }
             }
-        });
-
-        findViewById(R.id.qrscan).setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), CaptureActivity.class);
-            startActivityForResult(intent, REQUEST_CODE_QR_SCAN);
         });
 
         findViewById(R.id.btnLogin).setOnClickListener(v -> {
@@ -217,45 +210,6 @@ public class LoginActivity extends AppCompatActivity {
         while((read = in.read(buffer)) != -1){
             out.write(buffer, 0, read);
         }
-    }
-
-    public void callLogin(String data){
-
-        String[] res;
-
-        if (data != null) {
-            try {
-                // Split the result string using ";" as the delimiter
-                res = data.split(";");
-
-                if (res.length >= 2) {
-                    String username = res[0];  // Get the username
-                    String password = res[1];  // Get the password
-
-                    txtUserName.setText(username);
-                    txtPassword.setText(password);
-
-                    if (txtUserName.getText().toString().isEmpty()) {
-                        Toast.makeText(this, "please enter username.", Toast.LENGTH_SHORT).show();
-                    } else if (txtPassword.getText().toString().isEmpty()) {
-                        Toast.makeText(this, "please enter password.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        login(txtUserName.getText().toString(), txtPassword.getText().toString());
-                    }
-
-                } else {
-                    Toast.makeText(getApplication(),"Invalid QR code format.",Toast.LENGTH_SHORT).show();
-                }
-            } catch (Exception e) {
-                Toast.makeText(getApplication(),"Error parsing QR code: " + e.getMessage(),Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Toast.makeText(getApplication(),"No result found.",Toast.LENGTH_SHORT).show();
-        }
-        // ---------------reset--------------------------------------
-        txtUserName.requestFocus();
-        txtUserName.setEnabled(true);
-
     }
 
     private void login(String userName, String password) {

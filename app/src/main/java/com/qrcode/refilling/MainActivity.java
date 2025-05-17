@@ -626,7 +626,7 @@ public class MainActivity extends AppCompatActivity{
                 }
 
                 if (!txtCtNr1.getText().toString().isEmpty()) {
-                    compare();
+                    compare(false);
                 } else {
                     txtCtNrField1.setErrorEnabled(false);
                 }
@@ -637,7 +637,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void afterTextChanged() {
                 if (!(txtPartNr2.getText().toString().isEmpty())) {
-                    compare();
+                    compare(false);
                 }
             }
         });
@@ -645,7 +645,7 @@ public class MainActivity extends AppCompatActivity{
         txtDNr1.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged() {
-                compare();
+                compare(false);
             }
         });
 
@@ -654,7 +654,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void afterTextChanged() {
                 if (!(txtQuantity2.getText().toString().isEmpty())) {
-                    compare();
+                    compare(false);
                     txtCtNr2.requestFocus();
                 }
             }
@@ -700,7 +700,7 @@ public class MainActivity extends AppCompatActivity{
                 }
 
                 if (!txtCtNr2.getText().toString().isEmpty()) {
-                    compare();
+                    compare(false);
                 } else {
                     txtCtNrField2.setErrorEnabled(false);
                 }
@@ -710,14 +710,14 @@ public class MainActivity extends AppCompatActivity{
         txtPartNr2.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged() {
-                compare();
+                compare(false);
             }
         });
 
         txtDNr2.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged() {
-                compare();
+                compare(false);
             }
         });
 
@@ -725,7 +725,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void afterTextChanged() {
                 if (!(txtQuantity3.getText().toString().isEmpty())) {
-                    compare();
+                    compare(true);
                     txtCtNr3.requestFocus();
                 }
             }
@@ -767,7 +767,7 @@ public class MainActivity extends AppCompatActivity{
                 }
 
                 if (!txtCtNr3.getText().toString().isEmpty()) {
-                    compare();
+                    compare(false);
                 }
             }
         });
@@ -776,7 +776,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void afterTextChanged() {
                 if (!(txtPartNr3.getText().toString().isEmpty())) {
-                    compare();
+                    compare(false);
                 }
             }
         });
@@ -784,7 +784,7 @@ public class MainActivity extends AppCompatActivity{
         txtDNr3.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged() {
-                compare();
+                compare(false);
             }
         });
 
@@ -792,7 +792,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void afterTextChanged() {
                 if (!(txtQuantity3.getText().toString().isEmpty())) {
-                    compare();
+                    compare(true);
                 }
             }
         });
@@ -808,7 +808,7 @@ public class MainActivity extends AppCompatActivity{
         public abstract void afterTextChanged();
     }
 
-    private void compare() {
+    private void compare(boolean isQttyChanged) {
         if (isResetting) return;
 
         String strCtNr1 = txtCtNr1.getText().toString();
@@ -946,21 +946,25 @@ public class MainActivity extends AppCompatActivity{
                 txtTotalQuantity2.setBackgroundColor(Color.YELLOW);
                 txtTotalQuantity3.setBackgroundColor(Color.YELLOW);
 
-                final int remainedQuantity = quantity2 - quantity3;
-                new MaterialAlertDialogBuilder(this)
-                        .setTitle("Qtty are not same")
-                        .setMessage("Carton will remain “minus”?")
-                        .setNegativeButton("Ok", (dialogInterface, i) -> {
-                            dialogInterface.dismiss();
-                        })
-                        .show();
+                if (isQttyChanged) {
+                    new MaterialAlertDialogBuilder(this)
+                            .setTitle("Qtty are not same")
+                            .setMessage("Carton will remain “minus”?")
+                            .setNegativeButton("Ok", (dialogInterface, i) -> {
+                                dialogInterface.dismiss();
+                            })
+                            .show();
+                }
+
             } else {
                 txtQuantity2.setBackgroundTintList(redColors);
                 txtQuantity3.setBackgroundTintList(redColors);
                 txtTotalQuantity2.setBackgroundColor(Color.RED);
                 txtTotalQuantity3.setBackgroundColor(Color.RED);
 
-                showInformationDialog("Qtty are not same", "Good Qtty cannot be more than Minus Qtty. Please add Minus-Qtty.");
+                if (isQttyChanged) {
+                    showInformationDialog("Qtty are not same", "Good Qtty cannot be more than Minus Qtty. Please add Minus-Qtty.");
+                }
             }
         } else {
             txtQuantity2.setBackgroundTintList(redColors);
@@ -1105,10 +1109,10 @@ public class MainActivity extends AppCompatActivity{
                 bigLabelData.put(Utils.QUANTITY, txtQuantity3.getText().toString());
                 bigListAdapter.addItem(bigLabelData);
 
-                txtQuantity3.setText(quantity);
                 txtCtNr3.setText(cartonName);
                 txtPartNr3.setText(partNr);
                 txtDNr3.setText(dNr);
+                txtQuantity3.setText(quantity);
             }
 
             dialog.dismiss();
@@ -1413,6 +1417,8 @@ public class MainActivity extends AppCompatActivity{
 
         txtCtNr1.requestFocus();
         isResetting = false;
+
+        btnNext.setEnabled(false);
     }
 
     private void upload() {
