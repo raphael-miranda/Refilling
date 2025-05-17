@@ -86,6 +86,14 @@ public class LoginActivity extends AppCompatActivity {
 
                         txtUserName.setText(username);
                         txtPassword.setText(password);
+
+                        if (username.isEmpty()) {
+                            Toast.makeText(LoginActivity.this, "please enter username.", Toast.LENGTH_SHORT).show();
+                        } else if (password.isEmpty()) {
+                            Toast.makeText(LoginActivity.this, "please enter password.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            login(username, password);
+                        }
                     }
                 }
             }

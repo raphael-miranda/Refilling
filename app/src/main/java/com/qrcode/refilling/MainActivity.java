@@ -618,7 +618,10 @@ public class MainActivity extends AppCompatActivity{
                 int count = strCtNr.split(";").length;
 
                 if(count == 4) {
-                    txtPartNr1.setText(strCtNr.split(";")[1]);
+                    String partNr = strCtNr.split(";")[1];
+                    txtPartNr1.setText(partNr);
+                    txtPartNr1.setSelection(partNr.length());
+
                     txtDNr1.setText(strCtNr.split(";")[2]);
                     txtQuantity1.setText(strCtNr.split(";")[3]);
                     txtCtNr1.setText(strCtNr.split(";")[0]);
@@ -692,7 +695,9 @@ public class MainActivity extends AppCompatActivity{
                 int count = strCtNr.split(";").length;
 
                 if(count == 4) {
-                    txtPartNr2.setText(strCtNr.split(";")[1]);
+                    String partNr = strCtNr.split(";")[1];
+                    txtPartNr2.setText(partNr);
+                    txtPartNr2.setSelection(partNr.length());
                     txtDNr2.setText(strCtNr.split(";")[2]);
                     txtQuantity2.setText(strCtNr.split(";")[3]);
                     txtCtNr2.setText(strCtNr.split(";")[0]);
@@ -760,7 +765,9 @@ public class MainActivity extends AppCompatActivity{
                 int count = strCName.split(";").length;
 
                 if(count == 4) {
-                    txtPartNr3.setText(strCName.split(";")[1]);
+                    String partNr = strCName.split(";")[1];
+                    txtPartNr3.setText(partNr);
+                    txtPartNr3.setSelection(partNr.length());
                     txtDNr3.setText(strCName.split(";")[2]);
                     txtQuantity3.setText(strCName.split(";")[3]);
                     txtCtNr3.setText(strCName.split(";")[0]);
