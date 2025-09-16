@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity{
     private static final String HOST_ADDRESS = "ftp_host";
     private static final String FTP_PORT = "ftp_portNumber";
     private static final String SHARED_FOLDER = "shared_folder";
+    private static final String SUB_FOLDER = "sub_folder";
     private static final String FTP_USERNAME = "ftp_username";
     private static final String FTP_PASSWORD = "ftp_password";
     private static final String IS_MANUAL = "is_manual";
@@ -407,11 +408,13 @@ public class MainActivity extends AppCompatActivity{
         TextInputLayout fieldPort = dialogView.findViewById(R.id.fieldPort);
         TextInputLayout fieldUsername = dialogView.findViewById(R.id.fieldUserName);
         TextInputLayout fieldPassword = dialogView.findViewById(R.id.fieldPassword);
+        TextInputLayout fieldSubFolder = dialogView.findViewById(R.id.fieldSubFolder);
 
         TextInputEditText txtHost = dialogView.findViewById(R.id.txtHostAddress);
         TextInputEditText txtPortNumber = dialogView.findViewById(R.id.txtPortNumber);
         TextInputEditText txtUserName = dialogView.findViewById(R.id.txtUserName);
         TextInputEditText txtPassword = dialogView.findViewById(R.id.txtPassword);
+        TextInputEditText txtSubFolder = dialogView.findViewById(R.id.txtSubFolder);
         CheckBox checkboxManual = dialogView.findViewById(R.id.checkboxManual);
 
         MaterialButton btnSave = dialogView.findViewById(R.id.btnSave);
@@ -426,6 +429,7 @@ public class MainActivity extends AppCompatActivity{
             txtPortNumber.setInputType(InputType.TYPE_CLASS_NUMBER);
             fieldUsername.setHint(getString(R.string.username));
             fieldPassword.setHint(getString(R.string.password));
+            fieldSubFolder.setVisibility(View.GONE);
 
             txtHost.setText(sharedPreferences.getString(HOST_ADDRESS, ""));
             txtPortNumber.setText(sharedPreferences.getString(FTP_PORT, ""));
@@ -438,9 +442,11 @@ public class MainActivity extends AppCompatActivity{
             txtPortNumber.setInputType(InputType.TYPE_CLASS_TEXT);
             fieldUsername.setHint(getString(R.string.username));
             fieldPassword.setHint(getString(R.string.password));
+            fieldSubFolder.setVisibility(View.VISIBLE);
 
             txtHost.setText(sharedPreferences.getString(HOST_ADDRESS, ""));
             txtPortNumber.setText(sharedPreferences.getString(SHARED_FOLDER, ""));
+            txtSubFolder.setText(sharedPreferences.getString(SUB_FOLDER, ""));
             txtUserName.setText(sharedPreferences.getString(FTP_USERNAME, ""));
             txtPassword.setText(sharedPreferences.getString(FTP_PASSWORD, ""));
         }
@@ -455,6 +461,7 @@ public class MainActivity extends AppCompatActivity{
                     txtPortNumber.setInputType(InputType.TYPE_CLASS_NUMBER);
                     fieldUsername.setHint(getString(R.string.username));
                     fieldPassword.setHint(getString(R.string.password));
+                    fieldSubFolder.setVisibility(View.GONE);
 
                     if ("smb".equals(sharedPreferences.getString(SERVER_TYPE, "ftp"))) {
                         txtHost.setText("");
@@ -473,6 +480,7 @@ public class MainActivity extends AppCompatActivity{
                     txtPortNumber.setInputType(InputType.TYPE_CLASS_TEXT);
                     fieldUsername.setHint(getString(R.string.username));
                     fieldPassword.setHint(getString(R.string.password));
+                    fieldSubFolder.setVisibility(View.VISIBLE);
 
                     if ("ftp".equals(sharedPreferences.getString(SERVER_TYPE, "ftp"))) {
                         txtHost.setText("");
@@ -482,6 +490,7 @@ public class MainActivity extends AppCompatActivity{
                     } else {
                         txtHost.setText(sharedPreferences.getString(HOST_ADDRESS, ""));
                         txtPortNumber.setText(sharedPreferences.getString(SHARED_FOLDER, ""));
+                        txtSubFolder.setText(sharedPreferences.getString(SUB_FOLDER, ""));
                         txtUserName.setText(sharedPreferences.getString(FTP_USERNAME, ""));
                         txtPassword.setText(sharedPreferences.getString(FTP_PASSWORD, ""));
                     }
@@ -495,6 +504,7 @@ public class MainActivity extends AppCompatActivity{
             String portNumber = txtPortNumber.getText().toString();
             String username = txtUserName.getText().toString();
             String password = txtPassword.getText().toString();
+            String subFolder = txtSubFolder.getText().toString();
             boolean isManual = checkboxManual.isChecked();
 
             SharedPreferences sharedPreferences1 = getSharedPreferences(getPackageName(), MODE_PRIVATE);
@@ -505,6 +515,7 @@ public class MainActivity extends AppCompatActivity{
             } else if (toggleServerType.getCheckedButtonId() == R.id.btnSMBServer) {
                 editor.putString(SERVER_TYPE, "smb");
                 editor.putString(SHARED_FOLDER, portNumber);
+                editor.putString(SUB_FOLDER, subFolder);
             }
             editor.putString(HOST_ADDRESS, hostAddress);
             editor.putString(FTP_USERNAME, username);
@@ -1470,7 +1481,9 @@ public class MainActivity extends AppCompatActivity{
                 }
             } else if (serverType.equals("smb")) {
                 String sharedFolder = sharedPreferences.getString(SHARED_FOLDER, "");
-                uploadFileToSMB(host, sharedFolder, "", username, password);
+                String subFolder = sharedPreferences.getString(SUB_FOLDER, "");
+
+                uploadFileToSMB(host, sharedFolder, subFolder, username, password);
             }
 
             // set scanned number to 0
@@ -1616,7 +1629,7 @@ public class MainActivity extends AppCompatActivity{
         });
     }
 
-    public void uploadFileToSMB(String hostname, String shareName, String domain,
+    public void uploadFileToSMB(String hostname, String shareName, String subFolder,
                                 String username, String password) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -1633,8 +1646,18 @@ public class MainActivity extends AppCompatActivity{
                     String fileName = getFileName();
                     File file = new File(Utils.getMainFilePath(getApplicationContext()) + "/" + Constants.FolderName + "/" + fileName);
 
+                    // --- Ensure subfolder(s) exist ---
+                    if (subFolder != null && !subFolder.isEmpty()) {
+                        createFoldersIfNotExist(share, subFolder);
+                    }
+
+                    // --- Build remote path ---
+                    String remotePath = (subFolder == null || subFolder.isEmpty())
+                            ? fileName
+                            : subFolder + "\\" + fileName; // SMB uses backslash paths
+
                     FileInputStream fis = new FileInputStream(file);
-                    OutputStream os = share.openFile(fileName,
+                    OutputStream os = share.openFile(remotePath,
                             EnumSet.of(AccessMask.GENERIC_WRITE),
                             null,
                             SMB2ShareAccess.ALL,
@@ -1666,6 +1689,18 @@ public class MainActivity extends AppCompatActivity{
                 });
             }
         });
+    }
+
+    private void createFoldersIfNotExist(DiskShare share, String folderPath) {
+        String[] parts = folderPath.split("\\\\|/"); // handle both / and \
+        String currentPath = "";
+        for (String part : parts) {
+            if (part == null || part.trim().isEmpty()) continue;
+            currentPath = currentPath.isEmpty() ? part : currentPath + "\\" + part;
+            if (!share.folderExists(currentPath)) {
+                share.mkdir(currentPath);
+            }
+        }
     }
 
     private void testFtpConnection(String host, int port, String username, String password) {
